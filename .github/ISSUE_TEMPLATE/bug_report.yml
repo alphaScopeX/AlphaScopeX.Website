@@ -1,0 +1,62 @@
+name: 🐛 Bug report
+description: Report an issue
+labels: [bug]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        🐋 Thanks for taking the time to fill out this bug report!
+
+  - type: textarea
+    id: bug-description
+    attributes:
+      label: 📝 Describe the bug
+      description: A clear and concise description of what the bug is. If you intend to submit a PR for this issue, tell us in the description. Thanks!
+      placeholder: Bug description
+    validations:
+      required: true
+
+  - type: textarea
+    id: relevant-information
+    attributes:
+      label: 🩹 Relevant Information
+      description: Please provide your user id, feed id, feed url, or any other information that can help us reproduce the issue.
+      placeholder: User ID, Feed ID, Feed URL, etc.
+    validations:
+      required: false
+
+  - type: textarea
+    id: reproduction
+    attributes:
+      label: 🎮 Reproduction Video
+      description: If possible, please provide a video that demonstrates the bug.
+    validations:
+      required: false
+
+  - type: textarea
+    id: environment
+    attributes:
+      label: 🗿 Environment
+      description: Please provide the environment in which you are using the application. You can find this information by going to Preferences > About and clicking the copy button next to the version tag.
+
+  - type: checkboxes
+    id: checkboxes
+    attributes:
+      label: 💚 Validations
+      description: Before submitting the issue, please make sure you do the following
+      options:
+        - label: Check that there isn't already an issue that reports the same bug to avoid creating a duplicate.
+          required: true
+        - label: Check that this is a concrete bug. For Q&A, please open a GitHub Discussion instead.
+          required: true
+        - label: This issue is valid
+          required: true
+
+  - type: checkboxes
+    id: contributions
+    attributes:
+      label: 🫂 Contributions
+      description: Please note that Open Source projects are maintained by volunteers, where your cases might not be always relevant to the others. It would make things move faster if you could help investigate and propose solutions.
+      options:
+        - label: I am willing to submit a PR to fix this issue
+        - label: I am willing to submit a PR with failing tests (actually just go ahead and do it, thanks!)

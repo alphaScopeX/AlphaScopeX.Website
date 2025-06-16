@@ -1,0 +1,17 @@
+name: 🗺️ Create a roadmap
+description: Create a new roadmap for next version
+labels: [roadmap]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        🗺️ Here is the roadmap for next version.
+  
+  - type: textarea
+    id: roadmap-description
+    attributes:
+      label: 📝 Describe the roadmap
+      description: A clear and concise description of what the next version roadmap is.
+      placeholder: Next version roadmap
+    validations:
+      required: true
