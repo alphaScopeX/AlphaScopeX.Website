@@ -1,0 +1,15 @@
+{
+  "homePage": {
+    "title": "AlphaScopeX",
+    "header": {
+      "home": "Home",
+      "markets": "Markets",
+      "strategies": "Strategies",
+      "discussion": "Discussion",
+      "creatorHub": "Creator Hub",
+      "i18n": {
+        "label": "Choose Languages"
+      }
+    }
+  }
+}
