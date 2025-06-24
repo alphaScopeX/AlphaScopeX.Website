@@ -28,7 +28,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 
-import { Globe, Moon, Palette, Sun } from "lucide-react";
+import { Globe, Moon, Sun } from "lucide-react";
 import { useTheme } from "next-themes";
 
 export function HomeHeader() {
@@ -53,14 +53,14 @@ export function HomeHeader() {
   // We must use `useEffect` to detect if current render environment is in browser.
   // Otherwise Next will report the hydration problem, because we don't know if the
   // theme toggling happens in SSR.
-  // 
+  //
   // See [https://github.com/pacocoursey/next-themes?tab=readme-ov-file#avoid-hydration-mismatch]
 
   return (
-    <div id="home-header-wrapper" className={`w-full sticky py-4 px-3`}>
+    <div id="home-header-wrapper" className={`w-full fixed py-8 px-3 z-50`}>
       <div
         id="home-header-content"
-        className={`w-full flex border-2 border-gray-200 dark:border-gray-400 rounded-2xl px-3 py-2 text-xl 
+        className={`w-full flex border-2 border-gray-200 dark:border-accent rounded-2xl px-3 py-2 text-xl 
           relative justify-between bg-white dark:bg-background dark:text-primary`}
       >
         <div
@@ -99,11 +99,7 @@ export function HomeHeader() {
                 dark:text-primary`}
               onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
             >
-              {theme === "dark" ? (
-                <Sun />
-              ) : (
-                <Moon />
-              )}
+              {theme === "dark" ? <Sun /> : <Moon />}
             </Button>
           </div>
           <div id="i18n-toggle-wrapper" className={`flex-1`}>
