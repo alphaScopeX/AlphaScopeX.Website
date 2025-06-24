@@ -61,7 +61,7 @@ export function HomeHeader() {
       <div
         id="home-header-content"
         className={`w-full flex border-2 border-gray-200 dark:border-gray-400 rounded-2xl px-3 py-2 text-xl 
-          relative justify-between bg-white dark:bg-primary dark:text-gray-400`}
+          relative justify-between bg-white dark:bg-background dark:text-primary`}
       >
         <div
           id="logo-wrapper"
@@ -94,14 +94,15 @@ export function HomeHeader() {
         >
           <div id="theme-toggle-wrapper" className={`flex-1`}>
             <Button
-              className={`bg-white hover:bg-gray-100 rounded-full focus-visible:ring-0 
-                dark:bg-gray-950 cursor-pointer`}
+              className={`bg-background hover:bg-accent rounded-full focus-visible:ring-0 
+                dark:bg-background dark:hover:bg-accent cursor-pointer text-primary 
+                dark:text-primary`}
               onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
             >
               {theme === "dark" ? (
-                <Sun className={`text-black dark:text-gray-400`} />
+                <Sun />
               ) : (
-                <Moon className={`text-black`} />
+                <Moon />
               )}
             </Button>
           </div>
@@ -109,9 +110,11 @@ export function HomeHeader() {
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <Button
-                  className={`bg-white hover:bg-gray-100 rounded-full focus-visible:ring-0 cursor-pointer`}
+                  className={`bg-background hover:bg-accent rounded-full focus-visible:ring-0 
+                    cursor-pointer dark:bg-background dark:hover:bg-accent text-primary 
+                    dark:text-primary`}
                 >
-                  <Globe className={`text-black dark:text-gray-400`} />
+                  <Globe />
                 </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent className={`w-40`} align="start">
