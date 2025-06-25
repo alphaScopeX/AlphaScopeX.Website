@@ -1,0 +1,20 @@
+{
+  "homePage": {
+    "title": "AlphaScopeX",
+    "description": "Backed by AI. Powered by creators.",
+    "header": {
+      "home": "Home",
+      "markets": "Markets",
+      "strategies": "Strategies",
+      "discussion": "Discussion",
+      "creatorHub": "Creator Hub",
+      "i18n": {
+        "label": "Choose Languages"
+      }
+    },
+    "buttons": {
+      "createStrategies": "Create New Strategy",
+      "trendingAssets": "Trending Assets"
+    }
+  }
+}
