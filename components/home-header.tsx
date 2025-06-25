@@ -30,6 +30,12 @@ import {
 
 import { Globe, Moon, Sun } from "lucide-react";
 import { useTheme } from "next-themes";
+import { Krona_One } from "next/font/google";
+import { cn } from "@/lib/utils";
+
+const kronaOne = Krona_One({
+  weight: "400",
+});
 
 export function HomeHeader() {
   const [themeMounted, setThemeMounted] = useState<boolean>(false);
@@ -65,7 +71,10 @@ export function HomeHeader() {
       >
         <div
           id="logo-wrapper"
-          className={`flex-3 flex items-center justify-center font-bold cursor-pointer`}
+          className={cn(
+            `${kronaOne.className}`,
+            `flex-3 flex items-center justify-center font-bold cursor-pointer text-base`
+          )}
         >
           <Link href={"/"}>{t("title")}</Link>
         </div>
