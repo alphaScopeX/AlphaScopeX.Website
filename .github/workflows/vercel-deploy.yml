@@ -27,4 +27,4 @@ jobs:
       - name: Deploy to Vercel
         run: | 
           vercel link --token ${{ secrets.VERCEL_TOKEN }} --scope ${{ secrets.VERCEL_TEAM_ID }} --yes --project alphascope-x
-          vercel deploy
+          vercel deploy --token ${{ secrets.VERCEL_TOKEN }}
