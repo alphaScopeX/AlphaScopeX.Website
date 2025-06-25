@@ -6,11 +6,8 @@ import { useTranslations } from "next-intl";
 
 import {
   NavigationMenu,
-  NavigationMenuContent,
-  NavigationMenuItem,
   NavigationMenuLink,
   NavigationMenuList,
-  NavigationMenuTrigger,
   navigationMenuTriggerStyle,
 } from "@/components/ui/navigation-menu";
 import { Button } from "@/components/ui/button";
@@ -20,21 +17,17 @@ import {
   DropdownMenuGroup,
   DropdownMenuItem,
   DropdownMenuLabel,
-  DropdownMenuPortal,
-  DropdownMenuSeparator,
-  DropdownMenuSub,
-  DropdownMenuSubContent,
-  DropdownMenuSubTrigger,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 
-import { Globe, Moon, Sun } from "lucide-react";
+import { Globe, Moon, Sun, Users } from "lucide-react";
 import { useTheme } from "next-themes";
 import { Krona_One } from "next/font/google";
 import { cn } from "@/lib/utils";
 
 const kronaOne = Krona_One({
   weight: "400",
+  subsets: ["latin"]
 });
 
 export function HomeHeader() {
@@ -131,7 +124,15 @@ export function HomeHeader() {
               </DropdownMenuContent>
             </DropdownMenu>
           </div>
-          <div id="profile-wrapper" className={`flex-1`}></div>
+          <div id="profile-wrapper" className={`flex-1`}>
+            <Button
+              className={`bg-background hover:bg-accent rounded-full focus-visible:ring-0 
+                dark:bg-background dark:hover:bg-accent cursor-pointer text-primary 
+                dark:text-primary`}
+            >
+              <Users />
+            </Button>
+          </div>
         </div>
 
         <div id="app-wrapper" className={`flex-2`}></div>
