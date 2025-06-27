@@ -16,5 +16,21 @@
       "createStrategies": "Create New Strategy",
       "trendingAssets": "Trending Assets"
     }
+  },
+  "kolProfilePage": {
+    "bannerImage": {
+      "alt": "KOL Banner Image of {name}"
+    },
+    "avatarImage": {
+      "alt": "KOL Avatar Image of {name}"
+    },
+    "loadingError": {
+      "title": "Network Error",
+      "description": "🌐 Network Error: Failed to connect to KOL profile."
+    },
+    "followButton": {
+      "follow": "Follow",
+      "following": "Following"
+    }
   }
 }

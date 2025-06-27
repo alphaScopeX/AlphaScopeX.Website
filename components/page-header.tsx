@@ -22,13 +22,8 @@ import {
 
 import { Globe, Moon, Sun, Users } from "lucide-react";
 import { useTheme } from "next-themes";
-import { Krona_One } from "next/font/google";
 import { cn } from "@/lib/utils";
-
-const kronaOne = Krona_One({
-  weight: "400",
-  subsets: ["latin"],
-});
+import { kronaOne, outfit } from "@/lib/font";
 
 export function PageHeader({ isHomeHeader }: { isHomeHeader: boolean }) {
   const [themeMounted, setThemeMounted] = useState<boolean>(false);
@@ -89,7 +84,7 @@ export function PageHeader({ isHomeHeader }: { isHomeHeader: boolean }) {
               {navigationLinks.map((nav) => (
                 <NavigationMenuLink
                   asChild
-                  className={navigationMenuTriggerStyle()}
+                  className={cn(navigationMenuTriggerStyle(), `${outfit.className} text-base`)}
                   key={nav.i18n}
                 >
                   <Link href={nav.href}>{t(nav.i18n)}</Link>
