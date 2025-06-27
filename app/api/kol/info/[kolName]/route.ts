@@ -9,10 +9,10 @@ const backend = process.env.NEXT_PUBLIC_ALPHA_SCOPE_BACKEND_URL;
 
 export async function GET(
   request: NextRequest,
-  { params }: { params: { kolName: string } }
+  context: { params: Promise<{ kolName: string }> }
 ): Promise<NextResponse<unknown>> {
   try {
-    const { kolName } = await params;
+    const { kolName } = await context.params;
     const backendURL = new URL(
       `/api/v1/trader/profile/${kolName}`,
       backend
@@ -29,7 +29,7 @@ export async function GET(
     return NextResponse.json(backendRes.data);
   } catch (err) {
     return NextResponse.json(
-      { error: "Failed to get token market" },
+      { error: "Failed to get trader profile." },
       { status: err instanceof Error ? 500 : 502 }
     );
   }
