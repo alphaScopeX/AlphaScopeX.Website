@@ -22,15 +22,10 @@ import {
 
 import { Globe, Moon, Sun, Users } from "lucide-react";
 import { useTheme } from "next-themes";
-import { Krona_One } from "next/font/google";
 import { cn } from "@/lib/utils";
+import { kronaOne, outfit } from "@/lib/font";
 
-const kronaOne = Krona_One({
-  weight: "400",
-  subsets: ["latin"]
-});
-
-export function HomeHeader() {
+export function PageHeader({ isHomeHeader }: { isHomeHeader: boolean }) {
   const [themeMounted, setThemeMounted] = useState<boolean>(false);
   const { theme, setTheme } = useTheme();
 
@@ -56,11 +51,20 @@ export function HomeHeader() {
   // See [https://github.com/pacocoursey/next-themes?tab=readme-ov-file#avoid-hydration-mismatch]
 
   return (
-    <div id="home-header-wrapper" className={`w-full fixed py-8 px-3 z-50`}>
+    <div
+      id="home-header-wrapper"
+      className={cn(
+        `w-full`,
+        `${isHomeHeader ? "fixed py-8 px-3 z-50" : "relative"}`
+      )}
+    >
       <div
         id="home-header-content"
-        className={`w-full flex border-2 border-gray-200 dark:border-accent rounded-2xl px-3 py-2 text-xl 
-          relative justify-between bg-white dark:bg-background dark:text-primary`}
+        className={cn(
+          `w-full flex rounded-2xl px-3 py-2 text-xl relative justify-between bg-white 
+           dark:bg-background dark:text-primary`,
+          `${isHomeHeader ? "border-2 border-gray-200 dark:border-accent" : ""}`
+        )}
       >
         <div
           id="logo-wrapper"
@@ -80,7 +84,7 @@ export function HomeHeader() {
               {navigationLinks.map((nav) => (
                 <NavigationMenuLink
                   asChild
-                  className={navigationMenuTriggerStyle()}
+                  className={cn(navigationMenuTriggerStyle(), `${outfit.className} text-base`)}
                   key={nav.i18n}
                 >
                   <Link href={nav.href}>{t(nav.i18n)}</Link>
@@ -92,7 +96,7 @@ export function HomeHeader() {
 
         <div
           id="icons-wrapper"
-          className={`flex-2 flex items-center justify-evenly`}
+          className={`flex-2 flex items-center justify-between`}
         >
           <div id="theme-toggle-wrapper" className={`flex-1`}>
             <Button
@@ -130,7 +134,9 @@ export function HomeHeader() {
                 dark:bg-background dark:hover:bg-accent cursor-pointer text-primary 
                 dark:text-primary`}
             >
-              <Users />
+              <Link href={"/users"}>
+                <Users />
+              </Link>
             </Button>
           </div>
         </div>

@@ -5,12 +5,7 @@ import { cn } from "@/lib/utils";
 import { ShaderGradientCanvas, ShaderGradient } from "@shadergradient/react";
 import { ArrowRight } from "lucide-react";
 import { useTranslations } from "next-intl";
-import { Krona_One } from "next/font/google";
-
-const kronaOne = Krona_One({
-  weight: "400",
-  subsets: ["latin"],
-});
+import { kronaOne, outfit } from "@/lib/font";
 
 export default function Home() {
   const t = useTranslations("homePage");
@@ -64,13 +59,21 @@ export default function Home() {
         <h1 className={cn(`${kronaOne.className}`, `text-5xl`)}>
           {t("title")}
         </h1>
-        <p className={cn(`text-lg`)}>{t("description")}</p>
+        <p className={cn(`${outfit.className}`, `text-lg`)}>
+          {t("description")}
+        </p>
         <div className={`flex gap-9`}>
-          <Button className={`cursor-pointer p-5`} variant={`default`}>
+          <Button
+            className={cn(`${outfit.className}`, `cursor-pointer p-5`)}
+            variant={`default`}
+          >
             {t("buttons.createStrategies")}
             <ArrowRight />
           </Button>
-          <Button className={`cursor-pointer p-5`} variant={`outline`}>
+          <Button
+            className={cn(`${outfit.className}`, `cursor-pointer p-5`)}
+            variant={`outline`}
+          >
             {t("buttons.trendingAssets")}
           </Button>
         </div>

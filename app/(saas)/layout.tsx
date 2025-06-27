@@ -9,7 +9,7 @@ export default function HomeLayout({
 }>) {
   return (
     <div className={`h-full`}>
-      <PageHeader isHomeHeader={true} />
+      <PageHeader isHomeHeader={false} />
       {children}
     </div>
   );
