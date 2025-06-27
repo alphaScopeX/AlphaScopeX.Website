@@ -1,15 +1,15 @@
 import React from "react";
 
-import { HomeHeader } from "@/components/home-header";
+import { PageHeader } from "@/components/page-header";
 
 export default function HomeLayout({
-  children
+  children,
 }: Readonly<{
-  children: React.ReactNode
+  children: React.ReactNode;
 }>) {
   return (
     <div className={`h-full`}>
-      <HomeHeader />
+      <PageHeader isHomeHeader={true} />
       {children}
     </div>
   );
