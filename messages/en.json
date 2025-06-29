@@ -57,6 +57,21 @@
           "neutral": "Neutral Accuracy",
           "total": "Total Opinions",
           "overall": "Overall Accuracy"
+        },
+        "table": {
+          "caption": "List of {name}'s opinion history.",
+          "header": {
+            "token": "Token",
+            "opinion": "Opinion",
+            "score": "Score",
+            "date": "Date/Time",
+            "24Outcome": "24h",
+            "72Outcome": "72h",
+            "30DOutcome": "30d",
+            "90DOutcome": "90d",
+            "chart": "Chart",
+            "accuracy": "Accuracy"
+          }
         }
       },
       "subscribedContent": {

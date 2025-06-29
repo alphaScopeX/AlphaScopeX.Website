@@ -13,6 +13,15 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import CopyableLabel from "@/components/copyable-label";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import {
+  Table,
+  TableBody,
+  TableCaption,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
 
 interface KOLStatusContent {
   i18n: string;
@@ -50,6 +59,8 @@ export default function KOLProfile() {
     { i18n: t("tabs.opinionHistory.status.total"),   content: "..." },
     { i18n: t("tabs.opinionHistory.status.overall"), content: "..." },
   ]);
+  /* prettier-ignore */
+  const [kolOpinions, setKOLOpinions] = useState<OpinionTData[]>([]);
 
   const { kolName } = useParams<{ [x: string]: string }>();
 
@@ -83,13 +94,38 @@ export default function KOLProfile() {
     const res: KOLOpinionResponse = await fetch(
       `/api/kol/${kolName}/opinion?pn=1&ps=10`
     ).then((response) => response.json());
-    console.log(res);
+
+    if (res.data !== null) {
+      setKOLOpinions(res.data.result);
+
+      const tempKOLOpinionStatus = kolOpinionStatus;
+
+      tempKOLOpinionStatus[3].content = res.data.total.toString();
+      setKOLOpinionStatus(tempKOLOpinionStatus);
+    } else {
+      toast.error(t("loadingError.title"), {
+        description: t("loadingError.description", { name: kolName }),
+      });
+    }
   };
 
   const kolIdentityBadges: string[] = [
     "🔒 zk-verified",
     "🏆 Top Performer",
     "🎯 Strategy Master",
+  ];
+
+  const kolOpinionTableHeaders: string[] = [
+    "token",
+    "opinion",
+    "score",
+    "date",
+    "24Outcome",
+    "72Outcome",
+    "30DOutcome",
+    "90DOutcome",
+    "chart",
+    "accuracy",
   ];
 
   /* prettier-ignore */
@@ -106,6 +142,36 @@ export default function KOLProfile() {
     fetchKOLInfo();
     fetchKOLOpinions();
   }, []);
+
+  const Outcome = ({
+    price,
+    priceAtMention,
+  }: {
+    price: string;
+    priceAtMention: string;
+  }) => {
+    if (price === "0") {
+      return <p className={`text-gray-400 dark:text-gray-200`}>-</p>;
+    } else {
+      const outcome: string = (
+        ((parseFloat(price) - parseFloat(priceAtMention)) /
+          parseFloat(priceAtMention)) *
+        100
+      ).toFixed(2);
+
+      if (parseFloat(price) < parseFloat(priceAtMention)) {
+        return (
+          <p className={`text-red-500 dark:text-red-400`}>{outcome + "%"}</p>
+        );
+      } else {
+        return (
+          <p className={`text-green-500 dark:text-gree-400`}>
+            {"+" + outcome + "%"}
+          </p>
+        );
+      }
+    }
+  };
 
   return (
     <main id="kol-profile-wrapper" className={`pt-8`}>
@@ -266,7 +332,8 @@ export default function KOLProfile() {
             <TabsContent value="opinion-history">
               <div
                 id="opinion-wrapper"
-                className={`bg-background rounded-xl p-8 mb-8 shadow-[0_1px_3px_rgba(0,0,0,0.05)]`}
+                className={`bg-background rounded-xl p-8 mb-8 shadow-[0_1px_3px_rgba(0,0,0,0.05)]
+                  flex flex-col gap-12`}
               >
                 <div
                   id="opinion-status"
@@ -303,6 +370,60 @@ export default function KOLProfile() {
                         </div>
                       ))}
                 </div>
+                <Table>
+                  <TableCaption>
+                    {t("tabs.opinionHistory.table.caption", { name: kolName })}
+                  </TableCaption>
+                  <TableHeader className={`bg-secondary`}>
+                    <TableRow>
+                      {kolOpinionTableHeaders.map((header) => (
+                        <TableHead key={header}>
+                          {t(`tabs.opinionHistory.table.header.${header}`)}
+                        </TableHead>
+                      ))}
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {kolOpinions.map((opinion) => (
+                      <TableRow key={opinion.mentionAt}>
+                        <TableCell>{opinion.tokenName}</TableCell>
+                        <TableCell>{opinion.sentiment}</TableCell>
+                        <TableCell>{opinion.score}</TableCell>
+                        <TableCell>
+                          {opinion.mentionAt
+                            .replace("T", " ")
+                            .replace("+08:00", "")}
+                        </TableCell>
+                        <TableCell>
+                          <Outcome
+                            price={opinion.priceAt24}
+                            priceAtMention={opinion.priceAtMention}
+                          />
+                        </TableCell>
+                        <TableCell>
+                          <Outcome
+                            price={opinion.priceAt72}
+                            priceAtMention={opinion.priceAtMention}
+                          />
+                        </TableCell>
+                        <TableCell>
+                          <Outcome
+                            price={opinion.priceAt30d}
+                            priceAtMention={opinion.priceAtMention}
+                          />
+                        </TableCell>
+                        <TableCell>
+                          <Outcome
+                            price={opinion.priceAt90d}
+                            priceAtMention={opinion.priceAtMention}
+                          />
+                        </TableCell>
+                        <TableCell></TableCell>
+                        <TableCell>{opinion.accuracy}</TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
               </div>
             </TabsContent>
           </Tabs>
