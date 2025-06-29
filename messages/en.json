@@ -40,12 +40,31 @@
       "winRate": "Win Rate"
     },
     "tabs": {
-      "strategies": "📈 Strategies",
-      "indicators": "📊 Indicators",
-      "posts": "💬 Discussion Posts",
-      "opinionHistory": "🎯 Opinion History",
-      "subscribedContent": "📥 Subscribed Content",
-      "recentActivity": "⚡ Recent Activity"
+      "strategies": {
+        "title": "📈 Strategies"
+      },
+      "indicators": {
+        "title": "📊 Indicators"
+      },
+      "posts": {
+        "title": "💬 Discussion Posts"
+      },
+      "opinionHistory": {
+        "title": "🎯 Opinion History",
+        "status": {
+          "bullish": "Bullish Accuracy",
+          "bearish": "Bearish Accuracy",
+          "neutral": "Neutral Accuracy",
+          "total": "Total Opinions",
+          "overall": "Overall Accuracy"
+        }
+      },
+      "subscribedContent": {
+        "title": "📥 Subscribed Content"
+      },
+      "recentActivity": {
+        "title": "⚡ Recent Activity"
+      }
     }
   }
 }

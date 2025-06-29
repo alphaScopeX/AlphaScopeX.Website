@@ -38,6 +38,14 @@ export default function KOLProfile() {
     { i18n: t("status.posts"),      content: "/" },
     { i18n: t("status.winRate"),    content: "/" },
   ]);
+  /* prettier-ignore */
+  const [kolOpinionStatus, setKOLOpinionStatus] = useState<KOLStatusContent[]>([
+    { i18n: t("tabs.opinionHistory.status.bullish"), content: "/" },
+    { i18n: t("tabs.opinionHistory.status.bearish"), content: "/" },
+    { i18n: t("tabs.opinionHistory.status.neutral"), content: "/" },
+    { i18n: t("tabs.opinionHistory.status.total"),   content: "/" },
+    { i18n: t("tabs.opinionHistory.status.overall"), content: "/" },
+  ]);
 
   const { kolName } = useParams<{ [x: string]: string }>();
 
@@ -68,11 +76,11 @@ export default function KOLProfile() {
   };
 
   const fetchKOLOpinions = async () => {
-    const res: KOLOpinionResponse = await fetch(`/api/kol/${kolName}/opinion?pn=1&ps=10`).then(
-      (response) => response.json()
-    );
+    const res: KOLOpinionResponse = await fetch(
+      `/api/kol/${kolName}/opinion?pn=1&ps=10`
+    ).then((response) => response.json());
     console.log(res);
-  }
+  };
 
   const kolIdentityBadges: string[] = [
     "🔒 zk-verified",
@@ -82,13 +90,13 @@ export default function KOLProfile() {
 
   /* prettier-ignore */
   const kolProfileTab: { tabs: string; title: string }[] = [
-    { tabs: "strategies",         title: t("tabs.strategies") },
-    { tabs: "indicators",         title: t("tabs.indicators") },
-    { tabs: "posts",              title: t("tabs.posts") },
-    { tabs: "opinion-history",    title: t("tabs.opinionHistory") },
-    { tabs: "subscribed-content", title: t("tabs.subscribedContent") },
-    { tabs: "recent-activity",    title: t("tabs.recentActivity") },
-  ]
+    { tabs: "strategies",         title: t("tabs.strategies.title") },
+    { tabs: "indicators",         title: t("tabs.indicators.title") },
+    { tabs: "posts",              title: t("tabs.posts.title") },
+    { tabs: "opinion-history",    title: t("tabs.opinionHistory.title") },
+    { tabs: "subscribed-content", title: t("tabs.subscribedContent.title") },
+    { tabs: "recent-activity",    title: t("tabs.recentActivity.title") },
+  ];
 
   useEffect(() => {
     fetchKOLInfo();
@@ -104,7 +112,7 @@ export default function KOLProfile() {
         {/* Profile Section */}
         <section
           id="profile-section"
-          className={`bg-background rounded-xl p-8 mb-8 border-1 shadow-[0_1px_3px_rgba(0,0,0,0.05)]`}
+          className={`bg-background rounded-xl p-8 mb-8 shadow-[0_1px_3px_rgba(0,0,0,0.05)]`}
         >
           <div
             id="profile-top"
@@ -195,7 +203,7 @@ export default function KOLProfile() {
         {/* Status Section */}
         <section
           id="status-section"
-          className={`bg-background rounded-xl p-8 mb-8 border-1 shadow-[0_1px_3px_rgba(0,0,0,0.05)]`}
+          className={`bg-background rounded-xl p-8 mb-8 shadow-[0_1px_3px_rgba(0,0,0,0.05)]`}
         >
           <div
             id="status-grid"
@@ -235,17 +243,54 @@ export default function KOLProfile() {
         </section>
 
         {/* Tabs Section */}
-        <section
-          id="tabs-section"
-          className={`bg-background rounded-xl p-8 mb-8 border-1 shadow-[0_1px_3px_rgba(0,0,0,0.05)]`}
-        >
+        <section id="tabs-section">
           <Tabs defaultValue="opinion-history">
-            <TabsList>
+            <TabsList className={`bg-background`}>
               {kolProfileTab.map((tab) => (
-                <TabsTrigger value={tab.tabs} key={tab.tabs}>{tab.title}</TabsTrigger>
+                <TabsTrigger value={tab.tabs} key={tab.tabs}>
+                  {tab.title}
+                </TabsTrigger>
               ))}
             </TabsList>
-            <TabsContent value="opinion-history"></TabsContent>
+            <TabsContent value="opinion-history">
+              <div
+                id="opinion-wrapper"
+                className={`bg-background rounded-xl p-8 mb-8 shadow-[0_1px_3px_rgba(0,0,0,0.05)]`}
+              >
+                <div id="opinion-status" className={`grid grid-cols-5`}>
+                  {profileName === undefined
+                    ? [0, 1, 2, 3, 4].map((_) => (
+                        <div
+                          id="opinion-status-skeleton-item"
+                          className={`flex items-center justify-center`}
+                          key={_}
+                        >
+                          <Skeleton className={`w-[100px] h-[100px]`} />
+                        </div>
+                      ))
+                    : kolOpinionStatus.map((status) => (
+                        <div
+                          id="opinion-status-item"
+                          className={`text-center`}
+                          key={status.i18n}
+                        >
+                          <div
+                            id="opinion-status-value"
+                            className={`text-[2.5rem] font-bold`}
+                          >
+                            {status.content}
+                          </div>
+                          <div
+                            id="opinion-status-label"
+                            className={`text-[0.875rem] font-medium text-gray-500 dark:text-gray-300`}
+                          >
+                            {status.i18n}
+                          </div>
+                        </div>
+                      ))}
+                </div>
+              </div>
+            </TabsContent>
           </Tabs>
         </section>
       </div>
