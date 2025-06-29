@@ -19,6 +19,10 @@ interface KOLStatusContent {
   content: string;
 }
 
+type OpinionTData = KOLOpinionResponse["data"]["result"] extends Array<infer E>
+  ? E
+  : never;
+
 export default function KOLProfile() {
   const t = useTranslations("kolProfilePage");
 
@@ -32,19 +36,19 @@ export default function KOLProfile() {
   const [isFollowing, setIsFollowing] = useState<boolean>(false);
   /* prettier-ignore */
   const [kolStatus, setKOLStatus] = useState<KOLStatusContent[]>([
-    { i18n: t("status.strategies"), content: "/" },
-    { i18n: t("status.indicators"), content: "/" },
-    { i18n: t("status.followers"),  content: "/" },
-    { i18n: t("status.posts"),      content: "/" },
-    { i18n: t("status.winRate"),    content: "/" },
+    { i18n: t("status.strategies"), content: "..." },
+    { i18n: t("status.indicators"), content: "..." },
+    { i18n: t("status.followers"),  content: "..." },
+    { i18n: t("status.posts"),      content: "..." },
+    { i18n: t("status.winRate"),    content: "..." },
   ]);
   /* prettier-ignore */
   const [kolOpinionStatus, setKOLOpinionStatus] = useState<KOLStatusContent[]>([
-    { i18n: t("tabs.opinionHistory.status.bullish"), content: "/" },
-    { i18n: t("tabs.opinionHistory.status.bearish"), content: "/" },
-    { i18n: t("tabs.opinionHistory.status.neutral"), content: "/" },
-    { i18n: t("tabs.opinionHistory.status.total"),   content: "/" },
-    { i18n: t("tabs.opinionHistory.status.overall"), content: "/" },
+    { i18n: t("tabs.opinionHistory.status.bullish"), content: "..." },
+    { i18n: t("tabs.opinionHistory.status.bearish"), content: "..." },
+    { i18n: t("tabs.opinionHistory.status.neutral"), content: "..." },
+    { i18n: t("tabs.opinionHistory.status.total"),   content: "..." },
+    { i18n: t("tabs.opinionHistory.status.overall"), content: "..." },
   ]);
 
   const { kolName } = useParams<{ [x: string]: string }>();
@@ -243,11 +247,18 @@ export default function KOLProfile() {
         </section>
 
         {/* Tabs Section */}
-        <section id="tabs-section">
+        <section id="tabs-section flex gap-6">
           <Tabs defaultValue="opinion-history">
-            <TabsList className={`bg-background`}>
+            <TabsList
+              className={`bg-background whitespace-nowrap shrink-0 flex flex-wrap 
+                items-start h-auto`}
+            >
               {kolProfileTab.map((tab) => (
-                <TabsTrigger value={tab.tabs} key={tab.tabs}>
+                <TabsTrigger
+                  value={tab.tabs}
+                  key={tab.tabs}
+                  disabled={tab.tabs !== "opinion-history"}
+                >
                   {tab.title}
                 </TabsTrigger>
               ))}
@@ -257,7 +268,10 @@ export default function KOLProfile() {
                 id="opinion-wrapper"
                 className={`bg-background rounded-xl p-8 mb-8 shadow-[0_1px_3px_rgba(0,0,0,0.05)]`}
               >
-                <div id="opinion-status" className={`grid grid-cols-5`}>
+                <div
+                  id="opinion-status"
+                  className={`grid grid-cols-5 gap-2 max-md:grid-cols-2 max-md:gap-1`}
+                >
                   {profileName === undefined
                     ? [0, 1, 2, 3, 4].map((_) => (
                         <div
