@@ -5,6 +5,7 @@ import "./globals.css";
 import { ThemeProvider } from "@/components/providers/theme-provider";
 import { NextIntlClientProvider } from "next-intl";
 import { cn } from "@/lib/utils";
+import { Toaster } from "sonner";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -32,7 +33,7 @@ export default function RootLayout({
         className={cn(
           `${geistSans.variable} ${geistMono.variable} antialiased`,
           `bg-[radial-gradient(circle,#dddeee_1px,transparent_1px)] bg-[length:15px_15px] bg-repeat bg-center
-            dark:bg-[radial-gradient(circle,#575757_1px,transparent_1px)]`,
+            dark:bg-[radial-gradient(circle,#575757_1px,transparent_1px)]`
         )}
       >
         <NextIntlClientProvider>
@@ -42,7 +43,8 @@ export default function RootLayout({
             enableSystem
             disableTransitionOnChange
           >
-            {children}
+            <main>{children}</main>
+            <Toaster richColors position="top-center" />
           </ThemeProvider>
         </NextIntlClientProvider>
       </body>

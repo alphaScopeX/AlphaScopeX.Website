@@ -26,11 +26,60 @@
     },
     "loadingError": {
       "title": "Network Error",
-      "description": "🌐 Network Error: Failed to connect to KOL profile."
+      "description": "Failed to connect to KOL profile. KOL `{name}` may not exist in our database."
     },
     "followButton": {
       "follow": "Follow",
       "following": "Following"
+    },
+    "status": {
+      "strategies": "My Strategies",
+      "indicators": "Published Indicators",
+      "followers": "Follower Count",
+      "posts": "Discussion Posts",
+      "winRate": "Win Rate"
+    },
+    "tabs": {
+      "strategies": {
+        "title": "📈 Strategies"
+      },
+      "indicators": {
+        "title": "📊 Indicators"
+      },
+      "posts": {
+        "title": "💬 Discussion Posts"
+      },
+      "opinionHistory": {
+        "title": "🎯 Opinion History",
+        "status": {
+          "bullish": "Bullish Accuracy",
+          "bearish": "Bearish Accuracy",
+          "neutral": "Neutral Accuracy",
+          "total": "Total Opinions",
+          "overall": "Overall Accuracy"
+        },
+        "table": {
+          "caption": "List of {name}'s opinion history.",
+          "header": {
+            "token": "Token",
+            "opinion": "Opinion",
+            "score": "Score",
+            "date": "Date/Time",
+            "24Outcome": "24h",
+            "72Outcome": "72h",
+            "30DOutcome": "30d",
+            "90DOutcome": "90d",
+            "chart": "Chart",
+            "accuracy": "Accuracy"
+          }
+        }
+      },
+      "subscribedContent": {
+        "title": "📥 Subscribed Content"
+      },
+      "recentActivity": {
+        "title": "⚡ Recent Activity"
+      }
     }
   }
 }
