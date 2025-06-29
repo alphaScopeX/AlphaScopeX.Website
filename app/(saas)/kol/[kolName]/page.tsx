@@ -9,10 +9,19 @@ import { useEffect, useState } from "react";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
 import { outfit } from "@/lib/font";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import CopyableLabel from "@/components/copyable-label";
+import { Badge } from "@/components/ui/badge";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+
+interface KOLStatusContent {
+  i18n: string;
+  content: string;
+}
 
 export default function KOLProfile() {
-  /* prettier-ignore */
-  const [bannerImageUrl, setBannerImageUrl] = useState<string | undefined>(undefined);
+  const t = useTranslations("kolProfilePage");
+
   /* prettier-ignore */
   const [avatarImageUrl, setAvatarImageUrl] = useState<string | undefined>(undefined);
   /* prettier-ignore */
@@ -21,8 +30,15 @@ export default function KOLProfile() {
   const [profileDescription, setProfileDescription] = useState<string | undefined>(undefined);
   /* prettier-ignore */
   const [isFollowing, setIsFollowing] = useState<boolean>(false);
+  /* prettier-ignore */
+  const [kolStatus, setKOLStatus] = useState<KOLStatusContent[]>([
+    { i18n: t("status.strategies"), content: "/" },
+    { i18n: t("status.indicators"), content: "/" },
+    { i18n: t("status.followers"),  content: "/" },
+    { i18n: t("status.posts"),      content: "/" },
+    { i18n: t("status.winRate"),    content: "/" },
+  ]);
 
-  const t = useTranslations("kolProfilePage");
   const { kolName } = useParams<{ [x: string]: string }>();
 
   const fetchKOLInfo = async () => {
@@ -30,17 +46,20 @@ export default function KOLProfile() {
       (response) => response.json()
     );
     if (res.data !== null) {
-      setBannerImageUrl(res.data.image);
       setAvatarImageUrl(res.data.avatar.replace("normal", "400x400"));
       setProfileName(res.data.name);
       setProfileDescription(res.data.description);
+
+      let tempKOLStatus = kolStatus;
+      tempKOLStatus[4].content = "95%";
+      setKOLStatus(tempKOLStatus);
 
       // Now the banner and avatar image url are from x. Backend only returns
       // normal size avatar, so I replace the `normal` to `400x400`. Now the
       // avatar is much more clear.
     } else {
-      toast(t("loadingError.title"), {
-        description: t("loadingError.description"),
+      toast.error(t("loadingError.title"), {
+        description: t("loadingError.description", { name: kolName }),
       });
     }
 
@@ -48,104 +67,180 @@ export default function KOLProfile() {
     // and only set variables when it's not `null`.
   };
 
+  const kolIdentityBadges: string[] = [
+    "🔒 zk-verified",
+    "🏆 Top Performer",
+    "🎯 Strategy Master",
+  ];
+
+  /* prettier-ignore */
+  const kolProfileTab: { tabs: string; title: string }[] = [
+    { tabs: "strategies",         title: t("tabs.strategies") },
+    { tabs: "indicators",         title: t("tabs.indicators") },
+    { tabs: "posts",              title: t("tabs.posts") },
+    { tabs: "opinion-history",    title: t("tabs.opinionHistory") },
+    { tabs: "subscribed-content", title: t("tabs.subscribedContent") },
+    { tabs: "recent-activity",    title: t("tabs.recentActivity") },
+  ]
+
   useEffect(() => {
     fetchKOLInfo();
   }, []);
 
   return (
-    <div
-      id="kol-profile-wrapper"
-      className={`w-full h-full flex flex-col justify-center items-center gap-3`}
-    >
+    <main id="kol-profile-wrapper" className={`pt-8`}>
       <div
-        id="kol-info-wrapper"
-        className={`flex gap-5 w-full flex-col lg:flex-row`}
+        id="kol-profile-container"
+        className={`max-w-[1200px] mx-10 md:mx-20 px-6`}
       >
-        <div id="kol-profile-wrapper" className={`flex-4 h-[500px] px-3 py-4`}>
+        {/* Profile Section */}
+        <section
+          id="profile-section"
+          className={`bg-background rounded-xl p-8 mb-8 border-1 shadow-[0_1px_3px_rgba(0,0,0,0.05)]`}
+        >
           <div
-            id="kol-profile-content"
-            className={`border-2 border-gray-200 dark:border-accent h-full rounded-xl 
-              flex flex-col bg-background`}
+            id="profile-top"
+            className={`flex gap-8 items-start max-md:flex-col max-md:text-center`}
           >
-            <div
-              id="profile-bg"
-              className={`flex-1 flex justify-center items-center`}
+            <Avatar
+              id="profile-avatar"
+              className={`w-[120px] h-[120px] max-md:w-[100px] max-md:h-[100px] rounded-full 
+                flex items-center justify-center`}
             >
-              {bannerImageUrl !== undefined ? (
-                <img
-                  src={bannerImageUrl}
-                  alt={t("bannerImage.alt", { name: kolName })}
-                  className={`overflow-hidden rounded-t-xl h-full w-full`}
+              <AvatarImage
+                src={avatarImageUrl}
+                alt={t("avatarImage.alt", { name: kolName })}
+                id="profile-avatar-image"
+                className={`overflow-hidden rounded-full`}
+              />
+              <AvatarFallback>
+                <Skeleton
+                  className={`w-[120px] h-[120px] max-md:w-[100px] max-md:h-[100px]`}
                 />
-              ) : (
-                <div className={`space-y-2`}>
-                  <Skeleton className={`h-4 w-[250px]`} />
-                  <Skeleton className={`h-4 w-[200px]`} />
-                </div>
-              )}
-            </div>
-            <div id="profile-dt" className={`flex-1 pb-4`}>
-              <div
-                id="follow"
-                className={`relative flex justify-between items-center px-5 h-[60px]`}
-              >
-                <div
-                  id="avatar"
-                  className={`relative -top-[30px] left-[20px] w-[100px] h-[100px] rounded-full 
-                  p-[3px] bg-background flex justify-center items-center`}
-                >
-                  {avatarImageUrl !== undefined ? (
-                    <img
-                      src={avatarImageUrl}
-                      alt={t("avatarImage.alt", { name: kolName })}
-                      className={`rounded-full w-[94px] h-[94px] overflow-hidden`}
-                    />
-                  ) : (
-                    <Skeleton className={`w-[94px] h-[94px] rounded-full`} />
-                  )}
-                </div>
-                <div id="operations" className={`flex`}>
-                  {isFollowing ? (
-                    <Button
-                      variant={`outline`}
-                      className={cn(
-                        `${outfit.className}`,
-                        `text-lg cursor-pointer rounded-2xl w-[110px]`
-                      )}
-                      onClick={() => setIsFollowing(false)}
-                    >
-                      {t("followButton.following")}
-                    </Button>
-                  ) : (
-                    <Button
-                      variant={`default`}
-                      className={cn(
-                        `${outfit.className}`,
-                        `text-lg cursor-pointer rounded-2xl w-[110px]`
-                      )}
-                      onClick={() => setIsFollowing(true)}
-                    >
-                      {t("followButton.follow")}
-                    </Button>
-                  )}
-                </div>
+              </AvatarFallback>
+            </Avatar>
+            <div id="profile-info" className={`flex-1`}>
+              <div id="profile-name" className={`flex items-center gap-4 mb-2`}>
+                {profileName === undefined ? (
+                  <Skeleton className={`w-[200px] h-8`} />
+                ) : (
+                  <CopyableLabel
+                    className={`text-[2rem] font-bold`}
+                    description={`Profile name ${profileName}`}
+                    content={profileName}
+                    copiedText={profileName}
+                  />
+                )}
               </div>
-              <div id="name-description-wrapper" className={`flex flex-col px-5 gap-2`}>
-                <div id="name" className={`flex flex-col gap-2`}>
-                  <h1 className={`relative left-[20px] font-bold text-xl`}>
-                    {profileName}
-                  </h1>
-                  <p className={`relative left-[20px] text-gray-600 dark:text-gray-400 text-sm`}>{"@" + kolName}</p>
-                </div>
-                <div id="description">
-                  <p className={`relative left-[20px]`}>{profileDescription}</p>
-                </div>
+              <div
+                id="profile-username"
+                className={`text-base mb-2 text-gray-500 dark:text-gray-400 text-left 
+                  flex items-center`}
+              >
+                {profileName === undefined ? (
+                  <Skeleton className={`w-[140px] h-6`} />
+                ) : (
+                  <CopyableLabel
+                    description={`KOL username ${kolName}`}
+                    content={"@" + kolName}
+                    copiedText={kolName}
+                  />
+                )}
+              </div>
+              <div id="identity-badges" className={`flex gap-3 flex-wrap my-4`}>
+                {/* TODO: Here needs backend data */}
+                {profileName === undefined ? (
+                  <Skeleton className={`w-[200px] h-6`} />
+                ) : (
+                  kolIdentityBadges.map((identity) => (
+                    <Badge variant="secondary" key={identity}>
+                      {identity}
+                    </Badge>
+                  ))
+                )}
+              </div>
+              <div id="profile-bio" className={`text-base/relaxed text-left`}>
+                {profileName === undefined ? (
+                  <Skeleton className={`w-[230px] h-12`} />
+                ) : (
+                  profileDescription
+                )}
+              </div>
+              <div id="follow-button" className={`pt-3 float-left`}>
+                <Button
+                  variant={isFollowing ? "outline" : "secondary"}
+                  onClick={() => setIsFollowing(!isFollowing)}
+                  className={cn(
+                    `${outfit.className}`,
+                    `py-3 px-2 cursor-pointer transition-all duration-200 w-[80px]`
+                  )}
+                >
+                  {isFollowing
+                    ? t("followButton.following")
+                    : t("followButton.follow")}
+                </Button>
               </div>
             </div>
           </div>
-        </div>
-        <div id="kol-status-wrapper" className={`flex-3 h-[500px]`}></div>
+        </section>
+
+        {/* Status Section */}
+        <section
+          id="status-section"
+          className={`bg-background rounded-xl p-8 mb-8 border-1 shadow-[0_1px_3px_rgba(0,0,0,0.05)]`}
+        >
+          <div
+            id="status-grid"
+            className={`grid gap-2 grid-cols-5 max-md:grid-cols-2 max-md:gap-1`}
+          >
+            {profileName === undefined
+              ? [0, 1, 2, 3, 4].map((_) => (
+                  <div
+                    id="status-skeleton-item"
+                    className={`flex items-center justify-center`}
+                    key={_}
+                  >
+                    <Skeleton className={`w-[100px] h-[100px]`} />
+                  </div>
+                ))
+              : kolStatus.map((status) => (
+                  <div
+                    id="status-item"
+                    className={`text-center`}
+                    key={status.i18n}
+                  >
+                    <div
+                      id="status-value"
+                      className={`text-[2.5rem] font-bold`}
+                    >
+                      {status.content}
+                    </div>
+                    <div
+                      id="status-label"
+                      className={`text-[0.875rem] font-medium text-gray-500 dark:text-gray-300`}
+                    >
+                      {status.i18n}
+                    </div>
+                  </div>
+                ))}
+          </div>
+        </section>
+
+        {/* Tabs Section */}
+        <section
+          id="tabs-section"
+          className={`bg-background rounded-xl p-8 mb-8 border-1 shadow-[0_1px_3px_rgba(0,0,0,0.05)]`}
+        >
+          <Tabs defaultValue="opinion-history">
+            <TabsList>
+              {kolProfileTab.map((tab) => (
+                <TabsTrigger value={tab.tabs} key={tab.tabs}>{tab.title}</TabsTrigger>
+              ))}
+            </TabsList>
+            <TabsContent value="opinion-history"></TabsContent>
+          </Tabs>
+        </section>
       </div>
-    </div>
+    </main>
   );
 }

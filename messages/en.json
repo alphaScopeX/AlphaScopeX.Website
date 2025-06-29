@@ -26,11 +26,26 @@
     },
     "loadingError": {
       "title": "Network Error",
-      "description": "🌐 Network Error: Failed to connect to KOL profile."
+      "description": "Failed to connect to KOL profile. KOL `{name}` may not exist in our database."
     },
     "followButton": {
       "follow": "Follow",
       "following": "Following"
+    },
+    "status": {
+      "strategies": "My Strategies",
+      "indicators": "Published Indicators",
+      "followers": "Follower Count",
+      "posts": "Discussion Posts",
+      "winRate": "Win Rate"
+    },
+    "tabs": {
+      "strategies": "📈 Strategies",
+      "indicators": "📊 Indicators",
+      "posts": "💬 Discussion Posts",
+      "opinionHistory": "🎯 Opinion History",
+      "subscribedContent": "📥 Subscribed Content",
+      "recentActivity": "⚡ Recent Activity"
     }
   }
 }
