@@ -2,11 +2,16 @@
 
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
-import { KOLInfoResponse, KOLOpinionResponse } from "@/types/kol";
+import {
+  KOLInfoResponse,
+  KOLOpinionResponse,
+  KOLStatusResponse,
+} from "@/types/kol";
 import { useTranslations } from "next-intl";
 import { useParams } from "next/navigation";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
+import { v4 as uuidv4 } from "uuid";
 import { cn } from "@/lib/utils";
 import { outfit } from "@/lib/font";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -28,9 +33,11 @@ interface KOLStatusContent {
   content: string;
 }
 
-type OpinionTData = KOLOpinionResponse["data"]["result"] extends Array<infer E>
-  ? E
-  : never;
+/* prettier-ignore */
+type OpinionTData 
+  = KOLOpinionResponse["data"]["result"] extends Array<infer E>
+    ? E
+    : never;
 
 export default function KOLProfile() {
   const t = useTranslations("kolProfilePage");
@@ -97,10 +104,26 @@ export default function KOLProfile() {
 
     if (res.data !== null) {
       setKOLOpinions(res.data.result);
+    } else {
+      toast.error(t("loadingError.title"), {
+        description: t("loadingError.description", { name: kolName }),
+      });
+    }
+  };
 
+  const fetchKOLStatus = async () => {
+    const res: KOLStatusResponse = await fetch(
+      `/api/kol/${kolName}/status`
+    ).then((response) => response.json());
+
+    if (res.data !== null) {
       const tempKOLOpinionStatus = kolOpinionStatus;
+      tempKOLOpinionStatus[0].content = res.data.bullishAccuracy + "%";
+      tempKOLOpinionStatus[1].content = res.data.bearishAccuracy + "%";
+      tempKOLOpinionStatus[2].content = res.data.neutralAccuracy + "%";
+      tempKOLOpinionStatus[3].content = res.data.totalOpinions.toString();
+      tempKOLOpinionStatus[4].content = res.data.overallAccuracy + "%";
 
-      tempKOLOpinionStatus[3].content = res.data.total.toString();
       setKOLOpinionStatus(tempKOLOpinionStatus);
     } else {
       toast.error(t("loadingError.title"), {
@@ -141,8 +164,10 @@ export default function KOLProfile() {
   useEffect(() => {
     fetchKOLInfo();
     fetchKOLOpinions();
+    fetchKOLStatus();
   }, []);
 
+  /** This component is only used for table in `KOLProfile` page. */
   const Outcome = ({
     price,
     priceAtMention,
@@ -165,11 +190,110 @@ export default function KOLProfile() {
         );
       } else {
         return (
-          <p className={`text-green-500 dark:text-gree-400`}>
+          <p className={`text-green-500 dark:text-green-400`}>
             {"+" + outcome + "%"}
           </p>
         );
       }
+    }
+  };
+
+  /** This method is only used for kol opinion status section. */
+  const PercentStatus = ({ content }: { content: string }) => {
+    if (content.includes("%", -1)) {
+      if (parseFloat(content.replace("%", "")) < 50.0) {
+        return (
+          <span className={`text-red-500 dark:text-red-400`}>{content}</span>
+        );
+      } else {
+        return (
+          <span className={`text-green-500 dark:text-green-400`}>
+            {content}
+          </span>
+        );
+      }
+    } else {
+      return <span>{content}</span>;
+    }
+  };
+
+  /** This method is only used for kol sentiment column in table */
+  const Sentiment = ({
+    sentiment,
+  }: {
+    /* prettier-ignore */
+    sentiment: 
+      | "bullish" 
+      | "bearish" 
+      | "neutral" 
+      | "strongly_bullish"
+      | "strongly_bearish";
+  }) => {
+    /* prettier-ignore  */
+    switch (sentiment) {
+      case "bullish" :
+        return (
+          <span className={`text-green-500 dark:text-green-400 font-medium`}>
+            {t("tabs.opinionHistory.table.sentiment.bullish")}
+          </span>
+        );
+      case "bearish" :
+        return (
+          <span className={`text-red-500 dark:text-red-400 font-medium`}>
+            {t("tabs.opinionHistory.table.sentiment.bearish")}
+          </span>
+        );
+      case "neutral" :
+        return (
+          <span className={`text-gray-500 dark:text-gray-400 font-medium`}>
+            {t("tabs.opinionHistory.table.sentiment.neutral")}
+          </span>
+        );
+      case "strongly_bullish" :
+        return (
+          <span className={`text-green-500 dark:text-green-400 font-bold`}>
+            {t("tabs.opinionHistory.table.sentiment.stronglyBullish")}
+          </span>
+        );
+      case "strongly_bearish" :
+        return (
+          <span className={`text-red-500 dark:text-red-400 font-bold`}>
+            {t("tabs.opinionHistory.table.sentiment.stronglyBearish")}
+          </span>
+        );
+    }
+  };
+
+  const OpinionAccuracy = ({ accuracy }: { accuracy: 1 | 2 | 3 }) => {
+    /* prettier-ignore */
+    switch (accuracy) {
+      case 1 :
+        return (
+          <span
+            className={`py-1 px-3 rounded-2xl text-[0.75rem] font-[600] text-center
+              bg-[#dcfce7] text-[#166534] dark:bg-[#166534] dark:text-[#dcfce7]`}
+          >
+            {t("tabs.opinionHistory.table.accuracy.correct")}
+          </span>
+        );
+      case 2 :
+        return (
+          <span
+            className={`py-1 px-3 rounded-2xl text-[0.75rem] font-[600] text-center
+              bg-[#fee2e2] text-[#991b1b] dark:bg-[#991b1b] dark:text-[#fee2e2]`}
+          >
+            {t("tabs.opinionHistory.table.accuracy.incorrect")}
+          </span>
+        );
+      case 3 :
+        return (
+          <span
+            className={`py-1 px-3 rounded-2xl text-[0.75rem] font-[600] text-center
+              bg-[#fef3c7] text-[#92400e] dark:bg-[#92400e] dark:text-[#fef3c7]`}
+          >
+            {t("tabs.opinionHistory.table.accuracy.partial")}
+          </span>
+        )
     }
   };
 
@@ -313,8 +437,11 @@ export default function KOLProfile() {
         </section>
 
         {/* Tabs Section */}
-        <section id="tabs-section flex gap-6">
-          <Tabs defaultValue="opinion-history">
+        <section id="tabs-section">
+          <Tabs
+            defaultValue="opinion-history"
+            className={`flex flex-col gap-4`}
+          >
             <TabsList
               className={`bg-background whitespace-nowrap shrink-0 flex flex-wrap 
                 items-start h-auto`}
@@ -359,7 +486,7 @@ export default function KOLProfile() {
                             id="opinion-status-value"
                             className={`text-[2.5rem] font-bold`}
                           >
-                            {status.content}
+                            <PercentStatus content={status.content} />
                           </div>
                           <div
                             id="opinion-status-label"
@@ -385,11 +512,13 @@ export default function KOLProfile() {
                   </TableHeader>
                   <TableBody>
                     {kolOpinions.map((opinion) => (
-                      <TableRow key={opinion.mentionAt}>
+                      <TableRow className={`h-14 duration-200`} key={uuidv4()}>
                         <TableCell>{opinion.tokenName}</TableCell>
-                        <TableCell>{opinion.sentiment}</TableCell>
+                        <TableCell className={`w-[170px]`}>
+                          <Sentiment sentiment={opinion.sentiment} />
+                        </TableCell>
                         <TableCell>{opinion.score}</TableCell>
-                        <TableCell>
+                        <TableCell className={`w-[175px]`}>
                           {opinion.mentionAt
                             .replace("T", " ")
                             .replace("+08:00", "")}
@@ -419,7 +548,9 @@ export default function KOLProfile() {
                           />
                         </TableCell>
                         <TableCell></TableCell>
-                        <TableCell>{opinion.accuracy}</TableCell>
+                        <TableCell>
+                          <OpinionAccuracy accuracy={opinion.accuracy} />
+                        </TableCell>
                       </TableRow>
                     ))}
                   </TableBody>

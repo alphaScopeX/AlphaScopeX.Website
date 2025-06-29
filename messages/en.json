@@ -71,6 +71,18 @@
             "90DOutcome": "90d",
             "chart": "Chart",
             "accuracy": "Accuracy"
+          },
+          "sentiment": {
+            "bullish": "📈 Bullish",
+            "bearish": "📉 Bearish",
+            "neutral": "📊 Neutral",
+            "stronglyBullish": "📈 Strongly Bullish",
+            "stronglyBearish": "📉 Strongly Bearish"
+          },
+          "accuracy": {
+            "correct": "✓ Correct",
+            "incorrect": "✗ Incorrect",
+            "partial": "~ Partial"
           }
         }
       },
