@@ -42,7 +42,7 @@ export default function KOLProfile() {
   const { kolName } = useParams<{ [x: string]: string }>();
 
   const fetchKOLInfo = async () => {
-    const res: KOLInfoResponse = await fetch(`/api/kol/info/${kolName}`).then(
+    const res: KOLInfoResponse = await fetch(`/api/kol/${kolName}/info`).then(
       (response) => response.json()
     );
     if (res.data !== null) {
@@ -50,7 +50,7 @@ export default function KOLProfile() {
       setProfileName(res.data.name);
       setProfileDescription(res.data.description);
 
-      let tempKOLStatus = kolStatus;
+      const tempKOLStatus = kolStatus;
       tempKOLStatus[4].content = "95%";
       setKOLStatus(tempKOLStatus);
 
