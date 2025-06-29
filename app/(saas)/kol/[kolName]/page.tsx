@@ -2,7 +2,7 @@
 
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
-import { KOLInfoResponse } from "@/types/kol";
+import { KOLInfoResponse, KOLOpinionResponse } from "@/types/kol";
 import { useTranslations } from "next-intl";
 import { useParams } from "next/navigation";
 import { useEffect, useState } from "react";
@@ -67,6 +67,13 @@ export default function KOLProfile() {
     // and only set variables when it's not `null`.
   };
 
+  const fetchKOLOpinions = async () => {
+    const res: KOLOpinionResponse = await fetch(`/api/kol/${kolName}/opinion?pn=1&ps=10`).then(
+      (response) => response.json()
+    );
+    console.log(res);
+  }
+
   const kolIdentityBadges: string[] = [
     "🔒 zk-verified",
     "🏆 Top Performer",
@@ -85,6 +92,7 @@ export default function KOLProfile() {
 
   useEffect(() => {
     fetchKOLInfo();
+    fetchKOLOpinions();
   }, []);
 
   return (
