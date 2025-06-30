@@ -65,6 +65,7 @@
             "opinion": "Opinion",
             "score": "Score",
             "date": "Date/Time",
+            "source": "Source",
             "24Outcome": "24h",
             "72Outcome": "72h",
             "30DOutcome": "30d",

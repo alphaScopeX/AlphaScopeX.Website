@@ -40,5 +40,6 @@ export type KOLOpinionResponse = BaseResponse<{
     priceAt90d: string;
     accuracy: 1 | 2 | 3;
     mentionAt: string;
+    tweetUrl: string;
   }>;
 }>;
