@@ -16,11 +16,12 @@ export async function GET(
       backend
     );
     _backendURL.searchParams.append("userName", kolName);
-    clientQuery.forEach((key, value) => {
+    clientQuery.forEach((value, key) => {
       _backendURL.searchParams.append(key, value);
     })
 
     const backendURL = _backendURL.toString();
+    console.log(backendURL);
     const backendRes = await axios.get(backendURL, {
       headers: {
         ...(request.headers.get("Authorization") && {
