@@ -302,7 +302,7 @@ export default function KOLProfile() {
     <main id="kol-profile-wrapper" className={`pt-8`}>
       <div
         id="kol-profile-container"
-        className={`max-w-[1200px] mx-5 md:mx-20 px-6`}
+        className={`max-w-[1200px] mx-auto md:mx-auto px-[30px] md:px-[120px]`}
       >
         {/* Profile Section */}
         <section
@@ -396,7 +396,7 @@ export default function KOLProfile() {
         </section>
 
         {/* Status Section */}
-        <section
+        {/* <section
           id="status-section"
           className={`bg-background rounded-xl p-8 mb-8 shadow-[0_1px_3px_rgba(0,0,0,0.05)]`}
         >
@@ -435,7 +435,7 @@ export default function KOLProfile() {
                   </div>
                 ))}
           </div>
-        </section>
+        </section> */}
 
         {/* Tabs Section */}
         <section id="tabs-section">
