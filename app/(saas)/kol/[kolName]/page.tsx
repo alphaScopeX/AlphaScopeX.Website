@@ -27,6 +27,15 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import {
+  Pagination,
+  PaginationContent,
+  PaginationEllipsis,
+  PaginationFirst,
+  PaginationItem,
+  PaginationLast,
+  PaginationLink,
+} from "@/components/ui/pagination";
 
 interface KOLStatusContent {
   i18n: string;
@@ -68,6 +77,10 @@ export default function KOLProfile() {
   ]);
   /* prettier-ignore */
   const [kolOpinions, setKOLOpinions] = useState<OpinionTData[] | undefined>(undefined);
+  /* prettier-ignore */
+  const [paginationIndex, setPaginationIndex] = useState<number>(1);
+  /* prettier-ignore */
+  const [paginationTotalPage, setPaginationTotalPage] = useState<number>(1);
 
   const { kolName } = useParams<{ [x: string]: string }>();
 
@@ -99,11 +112,13 @@ export default function KOLProfile() {
 
   const fetchKOLOpinions = async () => {
     const res: KOLOpinionResponse = await fetch(
-      `/api/kol/${kolName}/opinion?pn=1&ps=10`
+      `/api/kol/${kolName}/opinion?pn=${paginationIndex}&ps=10`
     ).then((response) => response.json());
 
     if (res.data !== null) {
       setKOLOpinions(res.data.result);
+      console.log(res.data.result);
+      setPaginationTotalPage(res.data.totalPage);
     } else {
       toast.error(t("loadingError.title"), {
         description: t("loadingError.description", { name: kolName }),
@@ -143,11 +158,12 @@ export default function KOLProfile() {
     "opinion",
     "score",
     "date",
+    "source",
     "24Outcome",
     "72Outcome",
     "30DOutcome",
     "90DOutcome",
-    "chart",
+    // "chart",
     "accuracy",
   ];
 
@@ -166,6 +182,10 @@ export default function KOLProfile() {
     fetchKOLOpinions();
     fetchKOLStatus();
   }, []);
+
+  useEffect(() => {
+    fetchKOLOpinions();
+  }, [paginationIndex]);
 
   /** This component is only used for table in `KOLProfile` page. */
   const Outcome = ({
@@ -292,7 +312,7 @@ export default function KOLProfile() {
             className={`py-1 px-3 rounded-2xl text-[0.75rem] font-[600] text-center
               bg-[#fef3c7] text-[#92400e] dark:bg-[#92400e] dark:text-[#fef3c7]`}
           >
-            {t("tabs.opinionHistory.table.accuracy.partial")}
+            {t("tabs.opinionHistory.tab3le.accuracy.partial")}
           </span>
         )
     }
@@ -302,7 +322,7 @@ export default function KOLProfile() {
     <main id="kol-profile-wrapper" className={`pt-8`}>
       <div
         id="kol-profile-container"
-        className={`max-w-[1200px] mx-5 md:mx-20 px-6`}
+        className={`max-w-[1200px] mx-auto md:mx-auto px-[30px] md:px-[120px]`}
       >
         {/* Profile Section */}
         <section
@@ -396,7 +416,7 @@ export default function KOLProfile() {
         </section>
 
         {/* Status Section */}
-        <section
+        {/* <section
           id="status-section"
           className={`bg-background rounded-xl p-8 mb-8 shadow-[0_1px_3px_rgba(0,0,0,0.05)]`}
         >
@@ -435,7 +455,7 @@ export default function KOLProfile() {
                   </div>
                 ))}
           </div>
-        </section>
+        </section> */}
 
         {/* Tabs Section */}
         <section id="tabs-section">
@@ -518,14 +538,26 @@ export default function KOLProfile() {
                             <TableCell id="token-name-skeleton">
                               <Skeleton className={`w-[30px] h-10`} />
                             </TableCell>
-                            <TableCell id="sentiment-skeleton" className={`w-[170px]`}>
+                            <TableCell
+                              id="sentiment-skeleton"
+                              className={`w-[170px]`}
+                            >
                               <Skeleton className={`w-[140px] h-10`} />
                             </TableCell>
                             <TableCell id="score-skeleton">
                               <Skeleton className={`w-[30px] h-10`} />
                             </TableCell>
-                            <TableCell id="mention-at-skeleton" className={`w-[175px]`}>
+                            <TableCell
+                              id="mention-at-skeleton"
+                              className={`w-[175px]`}
+                            >
                               <Skeleton className={`w-[120px] h-10`} />
+                            </TableCell>
+                            <TableCell
+                              id="tweet-url-skeleton"
+                              className={`w-[100px]`}
+                            >
+                              <Skeleton className={`w-[80px] h-10`} />
                             </TableCell>
                             <TableCell id="price-at24-skeleton">
                               <Skeleton className={`w-[35px] h-10`} />
@@ -539,9 +571,9 @@ export default function KOLProfile() {
                             <TableCell id="price-at90d-skeleton">
                               <Skeleton className={`w-[35px] h-10`} />
                             </TableCell>
-                            <TableCell id="chart-skeleton">
+                            {/* <TableCell id="chart-skeleton">
                               <Skeleton className={`w-[40px] h-10`} />
-                            </TableCell>
+                            </TableCell> */}
                             <TableCell id="accuracy-skeleton">
                               <Skeleton className={`w-[60px] h-10`} />
                             </TableCell>
@@ -561,6 +593,14 @@ export default function KOLProfile() {
                               {opinion.mentionAt
                                 .replace("T", " ")
                                 .replace("+08:00", "")}
+                            </TableCell>
+                            <TableCell className={`w-[50px] text-wrap `}>
+                              <a
+                                href={opinion.tweetUrl}
+                                className={`text-wrap`}
+                              >
+                                {opinion.tweetUrl}
+                              </a>
                             </TableCell>
                             <TableCell>
                               <Outcome
@@ -586,7 +626,7 @@ export default function KOLProfile() {
                                 priceAtMention={opinion.priceAtMention}
                               />
                             </TableCell>
-                            <TableCell></TableCell>
+                            {/* <TableCell></TableCell> */}
                             <TableCell>
                               <OpinionAccuracy accuracy={opinion.accuracy} />
                             </TableCell>
@@ -594,6 +634,43 @@ export default function KOLProfile() {
                         ))}
                   </TableBody>
                 </Table>
+                <Pagination>
+                  <PaginationContent>
+                    <PaginationItem>
+                      <PaginationFirst
+                        onClick={() => setPaginationIndex(1)}
+                        className={`cursor-pointer`}
+                      />
+                    </PaginationItem>
+                    {(paginationIndex === 1
+                      ? [0, 1, 2]
+                      : paginationIndex === paginationTotalPage
+                      ? [-2, -1, 0]
+                      : [-1, 0, 1]
+                    ).map((num) => (
+                      <PaginationItem key={num}>
+                        <PaginationLink
+                          onClick={() =>
+                            setPaginationIndex(paginationIndex + num)
+                          }
+                          className={`cursor-pointer`}
+                          isActive={num === 0}
+                        >
+                          {paginationIndex + num}
+                        </PaginationLink>
+                      </PaginationItem>
+                    ))}
+                    <PaginationItem>
+                      <PaginationEllipsis />
+                    </PaginationItem>
+                    <PaginationItem>
+                      <PaginationLast
+                        onClick={() => setPaginationIndex(paginationTotalPage)}
+                        className={`cursor-pointer`}
+                      />
+                    </PaginationItem>
+                  </PaginationContent>
+                </Pagination>
               </div>
             </TabsContent>
           </Tabs>
