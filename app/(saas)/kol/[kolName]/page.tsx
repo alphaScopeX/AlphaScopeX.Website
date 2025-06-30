@@ -604,7 +604,8 @@ export default function KOLProfile() {
                             <TableCell>
                               <Link href={opinion.tweetUrl} target="_blank">
                                 <IconX
-                                  className={`mx-auto h-4 aspect-square`}
+                                  className={`mx-auto h-4 aspect-square hover:text-blue-500 
+                                    transition-colors duration-200`}
                                 />
                               </Link>
                             </TableCell>
