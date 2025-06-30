@@ -9,7 +9,7 @@ import {
 } from "@/types/kol";
 import { useTranslations } from "next-intl";
 import { useParams } from "next/navigation";
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { toast } from "sonner";
 import { v4 as uuidv4 } from "uuid";
 import { cn } from "@/lib/utils";
@@ -36,6 +36,8 @@ import {
   PaginationLast,
   PaginationLink,
 } from "@/components/ui/pagination";
+import Link from "next/link";
+import IconX from "@/components/icons/x";
 
 interface KOLStatusContent {
   i18n: string;
@@ -525,7 +527,12 @@ export default function KOLProfile() {
                   <TableHeader className={`bg-secondary`}>
                     <TableRow>
                       {kolOpinionTableHeaders.map((header) => (
-                        <TableHead key={header}>
+                        <TableHead
+                          key={header}
+                          className={`${
+                            header === "source" ? "text-center" : ""
+                          }`}
+                        >
                           {t(`tabs.opinionHistory.table.header.${header}`)}
                         </TableHead>
                       ))}
@@ -594,13 +601,13 @@ export default function KOLProfile() {
                                 .replace("T", " ")
                                 .replace("+08:00", "")}
                             </TableCell>
-                            <TableCell className={`w-[50px] text-wrap `}>
-                              <a
-                                href={opinion.tweetUrl}
-                                className={`text-wrap`}
-                              >
-                                {opinion.tweetUrl}
-                              </a>
+                            <TableCell>
+                              <Link href={opinion.tweetUrl} target="_blank">
+                                <IconX
+                                  className={`mx-auto h-4 aspect-square hover:text-blue-500 
+                                    transition-colors duration-200`}
+                                />
+                              </Link>
                             </TableCell>
                             <TableCell>
                               <Outcome
@@ -642,27 +649,46 @@ export default function KOLProfile() {
                         className={`cursor-pointer`}
                       />
                     </PaginationItem>
-                    {(paginationIndex === 1
-                      ? [0, 1, 2]
-                      : paginationIndex === paginationTotalPage
-                      ? [-2, -1, 0]
-                      : [-1, 0, 1]
-                    ).map((num) => (
-                      <PaginationItem key={num}>
-                        <PaginationLink
-                          onClick={() =>
-                            setPaginationIndex(paginationIndex + num)
-                          }
-                          className={`cursor-pointer`}
-                          isActive={num === 0}
-                        >
-                          {paginationIndex + num}
-                        </PaginationLink>
-                      </PaginationItem>
-                    ))}
-                    <PaginationItem>
-                      <PaginationEllipsis />
-                    </PaginationItem>
+                    {paginationTotalPage <= 3 ? (
+                      Array.from(
+                        { length: paginationTotalPage },
+                        (_, i) => 1 + i
+                      ).map((num) => (
+                        <PaginationItem key={num}>
+                          <PaginationLink
+                            onClick={() => setPaginationIndex(num)}
+                            className={`cursor-pointer`}
+                            isActive={num === paginationIndex}
+                          >
+                            {num}
+                          </PaginationLink>
+                        </PaginationItem>
+                      ))
+                    ) : (
+                      <React.Fragment>
+                        {(paginationIndex === 1
+                          ? [0, 1, 2]
+                          : paginationIndex === paginationTotalPage
+                          ? [-2, -1, 0]
+                          : [-1, 0, 1]
+                        ).map((num) => (
+                          <PaginationItem key={num}>
+                            <PaginationLink
+                              onClick={() =>
+                                setPaginationIndex(paginationIndex + num)
+                              }
+                              className={`cursor-pointer`}
+                              isActive={num === 0}
+                            >
+                              {paginationIndex + num}
+                            </PaginationLink>
+                          </PaginationItem>
+                        ))}
+                        <PaginationItem>
+                          <PaginationEllipsis />
+                        </PaginationItem>
+                      </React.Fragment>
+                    )}
                     <PaginationItem>
                       <PaginationLast
                         onClick={() => setPaginationIndex(paginationTotalPage)}

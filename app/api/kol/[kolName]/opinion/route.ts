@@ -20,8 +20,10 @@ export async function GET(
       _backendURL.searchParams.append(key, value);
     })
 
+    // Notice the parameter callback function of `forEach` function are
+    // `(value: string, key: string)`, it's in the reverse order to `(key, value)`.
+
     const backendURL = _backendURL.toString();
-    console.log(backendURL);
     const backendRes = await axios.get(backendURL, {
       headers: {
         ...(request.headers.get("Authorization") && {
