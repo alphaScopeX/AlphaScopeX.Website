@@ -143,6 +143,7 @@ export default function KOLProfile() {
     "opinion",
     "score",
     "date",
+    "source",
     "24Outcome",
     "72Outcome",
     "30DOutcome",
@@ -527,6 +528,9 @@ export default function KOLProfile() {
                             <TableCell id="mention-at-skeleton" className={`w-[175px]`}>
                               <Skeleton className={`w-[120px] h-10`} />
                             </TableCell>
+                            <TableCell id="tweet-url-skeleton" className={`w-[100px]`}>
+                              <Skeleton className={`w-[80px] h-10`} />
+                            </TableCell>
                             <TableCell id="price-at24-skeleton">
                               <Skeleton className={`w-[35px] h-10`} />
                             </TableCell>
@@ -561,6 +565,9 @@ export default function KOLProfile() {
                               {opinion.mentionAt
                                 .replace("T", " ")
                                 .replace("+08:00", "")}
+                            </TableCell>
+                            <TableCell className={`w-[50px] text-wrap `}>
+                              <a href={opinion.tweetUrl} className={`text-wrap`}>{opinion.tweetUrl}</a>
                             </TableCell>
                             <TableCell>
                               <Outcome
