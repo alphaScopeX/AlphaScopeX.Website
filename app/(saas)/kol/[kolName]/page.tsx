@@ -314,7 +314,7 @@ export default function KOLProfile() {
             className={`py-1 px-3 rounded-2xl text-[0.75rem] font-[600] text-center
               bg-[#fef3c7] text-[#92400e] dark:bg-[#92400e] dark:text-[#fef3c7]`}
           >
-            {t("tabs.opinionHistory.tab3le.accuracy.partial")}
+            {t("tabs.opinionHistory.table.accuracy.partial")}
           </span>
         )
     }
@@ -645,7 +645,10 @@ export default function KOLProfile() {
                   <PaginationContent>
                     <PaginationItem>
                       <PaginationFirst
-                        onClick={() => setPaginationIndex(1)}
+                        onClick={() => {
+                          setPaginationIndex(1);
+                          setKOLOpinions(undefined);
+                        }}
                         className={`cursor-pointer`}
                       />
                     </PaginationItem>
@@ -656,7 +659,10 @@ export default function KOLProfile() {
                       ).map((num) => (
                         <PaginationItem key={num}>
                           <PaginationLink
-                            onClick={() => setPaginationIndex(num)}
+                            onClick={() => {
+                              setPaginationIndex(num);
+                              setKOLOpinions(undefined);
+                            }}
                             className={`cursor-pointer`}
                             isActive={num === paginationIndex}
                           >
@@ -674,9 +680,10 @@ export default function KOLProfile() {
                         ).map((num) => (
                           <PaginationItem key={num}>
                             <PaginationLink
-                              onClick={() =>
-                                setPaginationIndex(paginationIndex + num)
-                              }
+                              onClick={() => {
+                                setPaginationIndex(paginationIndex + num);
+                                setKOLOpinions(undefined);
+                              }}
                               className={`cursor-pointer`}
                               isActive={num === 0}
                             >
@@ -691,7 +698,10 @@ export default function KOLProfile() {
                     )}
                     <PaginationItem>
                       <PaginationLast
-                        onClick={() => setPaginationIndex(paginationTotalPage)}
+                        onClick={() => {
+                          setPaginationIndex(paginationTotalPage);
+                          setKOLOpinions(undefined);
+                        }}
                         className={`cursor-pointer`}
                       />
                     </PaginationItem>
