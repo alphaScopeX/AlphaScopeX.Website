@@ -67,7 +67,7 @@ export default function KOLProfile() {
     { i18n: t("tabs.opinionHistory.status.overall"), content: "..." },
   ]);
   /* prettier-ignore */
-  const [kolOpinions, setKOLOpinions] = useState<OpinionTData[]>([]);
+  const [kolOpinions, setKOLOpinions] = useState<OpinionTData[] | undefined>(undefined);
 
   const { kolName } = useParams<{ [x: string]: string }>();
 
@@ -198,7 +198,7 @@ export default function KOLProfile() {
     }
   };
 
-  /** This method is only used for kol opinion status section. */
+  /** This component is only used for kol opinion status section. */
   const PercentStatus = ({ content }: { content: string }) => {
     if (content.includes("%", -1)) {
       if (parseFloat(content.replace("%", "")) < 50.0) {
@@ -217,7 +217,7 @@ export default function KOLProfile() {
     }
   };
 
-  /** This method is only used for kol sentiment column in table */
+  /** This component is only used for kol sentiment column in table */
   const Sentiment = ({
     sentiment,
   }: {
@@ -264,6 +264,7 @@ export default function KOLProfile() {
     }
   };
 
+  /** This component is only used for accuracy column in table */
   const OpinionAccuracy = ({ accuracy }: { accuracy: 1 | 2 | 3 }) => {
     /* prettier-ignore */
     switch (accuracy) {
@@ -301,7 +302,7 @@ export default function KOLProfile() {
     <main id="kol-profile-wrapper" className={`pt-8`}>
       <div
         id="kol-profile-container"
-        className={`max-w-[1200px] mx-10 md:mx-20 px-6`}
+        className={`max-w-[1200px] mx-5 md:mx-20 px-6`}
       >
         {/* Profile Section */}
         <section
@@ -511,48 +512,86 @@ export default function KOLProfile() {
                     </TableRow>
                   </TableHeader>
                   <TableBody>
-                    {kolOpinions.map((opinion) => (
-                      <TableRow className={`h-14 duration-200`} key={uuidv4()}>
-                        <TableCell>{opinion.tokenName}</TableCell>
-                        <TableCell className={`w-[170px]`}>
-                          <Sentiment sentiment={opinion.sentiment} />
-                        </TableCell>
-                        <TableCell>{opinion.score}</TableCell>
-                        <TableCell className={`w-[175px]`}>
-                          {opinion.mentionAt
-                            .replace("T", " ")
-                            .replace("+08:00", "")}
-                        </TableCell>
-                        <TableCell>
-                          <Outcome
-                            price={opinion.priceAt24}
-                            priceAtMention={opinion.priceAtMention}
-                          />
-                        </TableCell>
-                        <TableCell>
-                          <Outcome
-                            price={opinion.priceAt72}
-                            priceAtMention={opinion.priceAtMention}
-                          />
-                        </TableCell>
-                        <TableCell>
-                          <Outcome
-                            price={opinion.priceAt30d}
-                            priceAtMention={opinion.priceAtMention}
-                          />
-                        </TableCell>
-                        <TableCell>
-                          <Outcome
-                            price={opinion.priceAt90d}
-                            priceAtMention={opinion.priceAtMention}
-                          />
-                        </TableCell>
-                        <TableCell></TableCell>
-                        <TableCell>
-                          <OpinionAccuracy accuracy={opinion.accuracy} />
-                        </TableCell>
-                      </TableRow>
-                    ))}
+                    {kolOpinions === undefined
+                      ? [0, 1, 2, 3, 4, 5, 6, 7, 8, 9].map((_) => (
+                          <TableRow className={`h-14 duration-200`} key={_}>
+                            <TableCell id="token-name-skeleton">
+                              <Skeleton className={`w-[30px] h-10`} />
+                            </TableCell>
+                            <TableCell id="sentiment-skeleton" className={`w-[170px]`}>
+                              <Skeleton className={`w-[140px] h-10`} />
+                            </TableCell>
+                            <TableCell id="score-skeleton">
+                              <Skeleton className={`w-[30px] h-10`} />
+                            </TableCell>
+                            <TableCell id="mention-at-skeleton" className={`w-[175px]`}>
+                              <Skeleton className={`w-[120px] h-10`} />
+                            </TableCell>
+                            <TableCell id="price-at24-skeleton">
+                              <Skeleton className={`w-[35px] h-10`} />
+                            </TableCell>
+                            <TableCell id="price-at72-skeleton">
+                              <Skeleton className={`w-[35px] h-10`} />
+                            </TableCell>
+                            <TableCell id="price-at30d-skeleton">
+                              <Skeleton className={`w-[35px] h-10`} />
+                            </TableCell>
+                            <TableCell id="price-at90d-skeleton">
+                              <Skeleton className={`w-[35px] h-10`} />
+                            </TableCell>
+                            <TableCell id="chart-skeleton">
+                              <Skeleton className={`w-[40px] h-10`} />
+                            </TableCell>
+                            <TableCell id="accuracy-skeleton">
+                              <Skeleton className={`w-[60px] h-10`} />
+                            </TableCell>
+                          </TableRow>
+                        ))
+                      : kolOpinions.map((opinion) => (
+                          <TableRow
+                            className={`h-14 duration-200`}
+                            key={uuidv4()}
+                          >
+                            <TableCell>{opinion.tokenName}</TableCell>
+                            <TableCell className={`w-[170px]`}>
+                              <Sentiment sentiment={opinion.sentiment} />
+                            </TableCell>
+                            <TableCell>{opinion.score}</TableCell>
+                            <TableCell className={`w-[175px]`}>
+                              {opinion.mentionAt
+                                .replace("T", " ")
+                                .replace("+08:00", "")}
+                            </TableCell>
+                            <TableCell>
+                              <Outcome
+                                price={opinion.priceAt24}
+                                priceAtMention={opinion.priceAtMention}
+                              />
+                            </TableCell>
+                            <TableCell>
+                              <Outcome
+                                price={opinion.priceAt72}
+                                priceAtMention={opinion.priceAtMention}
+                              />
+                            </TableCell>
+                            <TableCell>
+                              <Outcome
+                                price={opinion.priceAt30d}
+                                priceAtMention={opinion.priceAtMention}
+                              />
+                            </TableCell>
+                            <TableCell>
+                              <Outcome
+                                price={opinion.priceAt90d}
+                                priceAtMention={opinion.priceAtMention}
+                              />
+                            </TableCell>
+                            <TableCell></TableCell>
+                            <TableCell>
+                              <OpinionAccuracy accuracy={opinion.accuracy} />
+                            </TableCell>
+                          </TableRow>
+                        ))}
                   </TableBody>
                 </Table>
               </div>
