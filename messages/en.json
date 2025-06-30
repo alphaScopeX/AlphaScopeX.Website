@@ -64,7 +64,7 @@
             "token": "Token",
             "opinion": "Opinion",
             "score": "Score",
-            "date": "Date/Time",
+            "date": "Mention At",
             "source": "Source",
             "24Outcome": "24h",
             "72Outcome": "72h",

@@ -314,7 +314,7 @@ export default function KOLProfile() {
             className={`py-1 px-3 rounded-2xl text-[0.75rem] font-[600] text-center
               bg-[#fef3c7] text-[#92400e] dark:bg-[#92400e] dark:text-[#fef3c7]`}
           >
-            {t("tabs.opinionHistory.tab3le.accuracy.partial")}
+            {t("tabs.opinionHistory.table.accuracy.partial")}
           </span>
         )
     }
