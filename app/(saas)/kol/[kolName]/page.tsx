@@ -38,6 +38,7 @@ import {
 } from "@/components/ui/pagination";
 import Link from "next/link";
 import IconX from "@/components/icons/x";
+import MiniCandleChart from "@/components/mini-candle-canvas";
 
 interface KOLStatusContent {
   i18n: string;
@@ -119,7 +120,6 @@ export default function KOLProfile() {
 
     if (res.data !== null) {
       setKOLOpinions(res.data.result);
-      console.log(res.data.result);
       setPaginationTotalPage(res.data.totalPage);
     } else {
       toast.error(t("loadingError.title"), {
@@ -165,7 +165,7 @@ export default function KOLProfile() {
     "72Outcome",
     "30DOutcome",
     "90DOutcome",
-    // "chart",
+    "chart",
     "accuracy",
   ];
 
@@ -578,9 +578,9 @@ export default function KOLProfile() {
                             <TableCell id="price-at90d-skeleton">
                               <Skeleton className={`w-[35px] h-10`} />
                             </TableCell>
-                            {/* <TableCell id="chart-skeleton">
+                            <TableCell id="chart-skeleton">
                               <Skeleton className={`w-[40px] h-10`} />
-                            </TableCell> */}
+                            </TableCell>
                             <TableCell id="accuracy-skeleton">
                               <Skeleton className={`w-[60px] h-10`} />
                             </TableCell>
@@ -633,7 +633,9 @@ export default function KOLProfile() {
                                 priceAtMention={opinion.priceAtMention}
                               />
                             </TableCell>
-                            {/* <TableCell></TableCell> */}
+                            <TableCell>
+                              <MiniCandleChart data={[]} />
+                            </TableCell>
                             <TableCell>
                               <OpinionAccuracy accuracy={opinion.accuracy} />
                             </TableCell>

@@ -25,7 +25,7 @@ import { useTheme } from "next-themes";
 import { cn } from "@/lib/utils";
 import { kronaOne, outfit } from "@/lib/font";
 
-export function PageHeader({ isHomeHeader }: { isHomeHeader: boolean }) {
+export default function PageHeader({ isHomeHeader }: { isHomeHeader: boolean }) {
   const [themeMounted, setThemeMounted] = useState<boolean>(false);
   const { theme, setTheme } = useTheme();
 
