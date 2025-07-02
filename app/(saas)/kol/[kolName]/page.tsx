@@ -141,8 +141,14 @@ export default function KOLProfile() {
 
             return {
               ...opinion,
-              kLineData: kLineRes.data || undefined,
+              kLineData:
+                kLineRes.data.sort(
+                  (a, b) => parseInt(a.timestamp) - parseInt(b.timestamp)
+                ) || undefined,
             };
+
+            // Notice `TokenKLineResponse.data` responses as descending order in
+            // `timestamp`.
           } catch (err) {
             toast.error("");
             return {
@@ -671,7 +677,13 @@ export default function KOLProfile() {
                               {opinion.kLineData === undefined ? (
                                 <Skeleton className={`w-[40px] h-10`} />
                               ) : (
-                                <MiniCandleChart data={opinion.kLineData} />
+                                <MiniCandleChart
+                                  data={opinion.kLineData}
+                                  outcry={{
+                                    mentionAt: opinion.mentionAt,
+                                    price: opinion.priceAtMention,
+                                  }}
+                                />
                               )}
                             </TableCell>
                             <TableCell>
