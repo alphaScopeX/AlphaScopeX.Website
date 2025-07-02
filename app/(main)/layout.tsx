@@ -1,6 +1,6 @@
 import React from "react";
 
-import { PageHeader } from "@/components/page-header";
+import PageHeader from "@/components/page-header";
 
 export default function HomeLayout({
   children,

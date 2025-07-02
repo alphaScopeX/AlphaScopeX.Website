@@ -12,7 +12,7 @@ interface CopyableLabelProps {
   description?: string;
 }
 
-function CopyableLabel({
+export default function CopyableLabel({
   className,
   content,
   copiedText,
@@ -34,5 +34,3 @@ function CopyableLabel({
     </div>
   );
 }
-
-export default CopyableLabel;
