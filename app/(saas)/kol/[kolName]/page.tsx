@@ -90,6 +90,7 @@ export default function KOLProfile() {
     const res: KOLInfoResponse = await fetch(`/api/kol/${kolName}/info`).then(
       (response) => response.json()
     );
+
     if (res.data !== null) {
       setAvatarImageUrl(res.data.avatar.replace("normal", "400x400"));
       setProfileName(res.data.name);

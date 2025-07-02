@@ -94,5 +94,15 @@
         "title": "⚡ Recent Activity"
       }
     }
+  },
+  "marketPage": {
+    "title": "Token Market",
+    "subtitle": "Explore trending tokens and their on-chain metrics",
+    "status": {
+      "loadingError": {
+        "title": "Network Error",
+        "description": "Failed to connect to market status. There may be some network problems"
+      }
+    }
   }
 }
