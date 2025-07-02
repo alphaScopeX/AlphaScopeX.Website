@@ -6,3 +6,6 @@ export type MarketStatusResponse = BaseResponse<{
   marketCap: string;
   totalTradingVolume: string;
 }>
+import { CandleData } from "@/types/candle";
+
+export type TokenKLineResponse = BaseResponse<CandleData[]>
