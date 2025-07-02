@@ -150,7 +150,7 @@ export default function KOLProfile() {
             // Notice `TokenKLineResponse.data` responses as descending order in
             // `timestamp`.
           } catch (err) {
-            toast.error("");
+            toast.error(`${err}`);
             return {
               ...opinion,
               kLineData: undefined,
