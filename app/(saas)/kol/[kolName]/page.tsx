@@ -39,6 +39,8 @@ import {
 import Link from "next/link";
 import IconX from "@/components/icons/x";
 import MiniCandleChart from "@/components/mini-candle-canvas";
+import { CandleData } from "@/types/candle";
+import { TokenKLineResponse } from "@/types/token";
 
 interface KOLStatusContent {
   i18n: string;
@@ -48,7 +50,7 @@ interface KOLStatusContent {
 /* prettier-ignore */
 type OpinionTData 
   = KOLOpinionResponse["data"]["result"] extends Array<infer E>
-    ? E
+    ? E & { kLineData?: CandleData[] }
     : never;
 
 export default function KOLProfile() {
@@ -119,7 +121,39 @@ export default function KOLProfile() {
     ).then((response) => response.json());
 
     if (res.data !== null) {
-      setKOLOpinions(res.data.result);
+      const opinions: OpinionTData[] = res.data.result;
+
+      // `forEach` will not wait for the asynchronous function to finish, so React
+      // considers `KOLOpinions[0].kLineData` to be undefined. We should use `Promise.all`
+      // to wait for all asynchronous functions to finish.
+
+      const opinionsWithKLine = await Promise.all(
+        opinions.map(async (opinion): Promise<OpinionTData> => {
+          const timestamp = new Date(opinion.mentionAt);
+          const unixTimestamp = Math.floor(timestamp.getTime() / 1000);
+          // We need to transform the mentionAt field (which is ISO8601 format)
+          // to unix timestamp.
+
+          try {
+            const kLineRes: TokenKLineResponse = await fetch(
+              `/api/market/${opinion.tokenName}/kline?mentionAt=${unixTimestamp}`
+            ).then((response) => response.json());
+
+            return {
+              ...opinion,
+              kLineData: kLineRes.data || undefined,
+            };
+          } catch (err) {
+            toast.error("");
+            return {
+              ...opinion,
+              kLineData: undefined,
+            };
+          }
+        })
+      );
+
+      setKOLOpinions(opinionsWithKLine);
       setPaginationTotalPage(res.data.totalPage);
     } else {
       toast.error(t("loadingError.title"), {
@@ -634,7 +668,11 @@ export default function KOLProfile() {
                               />
                             </TableCell>
                             <TableCell>
-                              <MiniCandleChart data={[]} />
+                              {opinion.kLineData === undefined ? (
+                                <Skeleton className={`w-[40px] h-10`} />
+                              ) : (
+                                <MiniCandleChart data={opinion.kLineData} />
+                              )}
                             </TableCell>
                             <TableCell>
                               <OpinionAccuracy accuracy={opinion.accuracy} />
