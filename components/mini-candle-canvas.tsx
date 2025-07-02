@@ -88,17 +88,17 @@ export default function MiniCandleChart({
       ctx.closePath();
       ctx.fill();
 
-      const outcryX = (outcryIndex /  (prices.length - 1)) * width;
+      const outcryX = (outcryIndex / (prices.length - 1)) * width;
       const outcryY = height - (outcryPrice / maxPrice) * height * yScaleFactor;
-      ctx.beginPath()
+      ctx.beginPath();
       ctx.arc(outcryX, outcryY, 3, 0, 2 * Math.PI);
-      ctx.fillStyle = 
+      ctx.fillStyle =
         prices[prices.length - 1] <= prices[0] ? colorDown : colorUp;
       ctx.fill();
 
       ctx.beginPath();
       ctx.arc(outcryX, outcryY, 3, 0, 2 * Math.PI);
-      ctx.strokeStyle = "white"
+      ctx.strokeStyle = "white";
       ctx.lineWidth = 2;
       ctx.stroke();
     }
@@ -111,6 +111,8 @@ export default function MiniCandleChart({
     colorUpFill,
     colorDownFill,
     lineWidth,
+    outcry,
+    yScaleFactor,
   ]);
 
   return <canvas ref={canvasRef} className={cn(className, `block`)} />;
