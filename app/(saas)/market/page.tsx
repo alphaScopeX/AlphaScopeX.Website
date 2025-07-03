@@ -100,7 +100,12 @@ export default function TokenMarket() {
         setTokens(res.data.list);
         setPaginationTotalPage(res.data.totalPages);
       } else throw new Error("Failed to connect to token list");
-    } catch (err) {}
+    } catch (err) {
+      toast.error(t("token.status.loadingError.title"), {
+        description: t("token.status.loadingError.description"),
+      });
+      console.error(err instanceof Error ? err.message : err);
+    }
   };
 
   useEffect(() => {
@@ -199,7 +204,7 @@ export default function TokenMarket() {
             className={`grid grid-cols-1 md:grid-cols-2 gap-6 mb-6`}
           >
             {tokens.length === 0
-              ? new Array(10).fill(0).map((_) => (
+              ? new Array(10).fill(0).map(() => (
                   <div
                     id={`token-skeleton-wrapper`}
                     className={`rounded-2xl p-6 bg-background border-1 shadow-[0_1px_3px_rgba(0,0,0,0.05)]
