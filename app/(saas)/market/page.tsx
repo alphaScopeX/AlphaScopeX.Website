@@ -21,6 +21,7 @@ import { useTranslations } from "next-intl";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
 import { v4 as uuidv4 } from "uuid";
+import { Input } from "@/components/ui/input";
 
 interface MarketStatusContent {
   i18n: string;
@@ -59,6 +60,8 @@ export default function TokenMarket() {
   const [tokens, setTokens] = useState<TokenData[]>([]);
   /* prettier-ignore */
   const [paginationTotalPage, setPaginationTotalPage] = useState<number>(1);
+  /* prettier-ignore */
+  const [searchTokenName, setSearchTokenName] = useState<string>("");
 
   const fetchTokenMarketStatus = async () => {
     try {
@@ -66,7 +69,7 @@ export default function TokenMarket() {
         (response) => response.json()
       );
 
-      if (res.data !== null) {
+      if (res.data !== undefined) {
         // Notice `const tempMarketStatus = marketStatus` is only the reference
         // to original array. We need to create a copy. State is immutable.
 
@@ -90,10 +93,10 @@ export default function TokenMarket() {
   const fetchTokenList = async () => {
     try {
       const res: TokenListResponse = await fetch(
-        `/api/market/list?pn=${paginationIndex}&ps=10&name=&symbol=`
+        `/api/market/list?pn=${paginationIndex}&ps=10&name=${searchTokenName}&symbol=`
       ).then((response) => response.json());
 
-      if (res.data !== null) {
+      if (res.data !== undefined) {
         setTokens(res.data.list);
         setPaginationTotalPage(res.data.totalPages);
       } else throw new Error("Failed to connect to token list");
@@ -178,6 +181,19 @@ export default function TokenMarket() {
           className={`bg-background rounded-xl p-8 mb-8 
             text-center shadow-[0_1px_3px_rgba(0,0,0,0.05)]`}
         >
+          <Input
+            type="search"
+            placeholder={t("search.placeholder")}
+            className={`mb-6 w-2/3`}
+            value={searchTokenName}
+            onChange={(e) => setSearchTokenName(e.target.value)}
+            onKeyDown={(e) => {
+              if (e.key === "Enter") {
+                setTokens([]);
+                fetchTokenList();
+              };
+            }}
+          />
           <div
             id="token-grid"
             className={`grid grid-cols-1 md:grid-cols-2 gap-6 mb-6`}
@@ -187,10 +203,14 @@ export default function TokenMarket() {
                   <div
                     id={`token-skeleton-wrapper`}
                     className={`rounded-2xl p-6 bg-background border-1 shadow-[0_1px_3px_rgba(0,0,0,0.05)]
-                    transition-all duration-350 hover:border-primary hover:-translate-y-1 cursor-pointer`}
+                    transition-all duration-350 hover:border-primary hover:-translate-y-1 cursor-pointer
+                    flex flex-col gap-4`}
                     key={uuidv4()}
                   >
                     <Skeleton className={`w-[100px] h-[100px]`} />
+                    <Skeleton className={`w-[300px] h-4`} />
+                    <Skeleton className={`w-[250px] h-4`} />
+                    <Skeleton className={`w-[200px] h-4`} />
                   </div>
                 ))
               : tokens.map((token) => (
@@ -236,11 +256,11 @@ export default function TokenMarket() {
                       >
                         {[
                           {
-                            i18n: t("tokenStatus.currentPrice"),
+                            i18n: t("token.status.currentPrice"),
                             content: "$" + token.currentPrice,
                           },
                           {
-                            i18n: t("tokenStatus.change24h"),
+                            i18n: t("token.status.change24h"),
                             content:
                               parseFloat(token.priceChange24h) < 0 ? (
                                 <span
@@ -258,11 +278,11 @@ export default function TokenMarket() {
                               ),
                           },
                           {
-                            i18n: t("tokenStatus.marketCap"),
+                            i18n: t("token.status.marketCap"),
                             content: "$" + unit(token.marketCap),
                           },
                           {
-                            i18n: t("tokenStatus.volume24h"),
+                            i18n: t("token.status.volume24h"),
                             content: "$" + unit(token.totalVolume),
                           },
                         ].map((item) => (

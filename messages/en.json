@@ -110,11 +110,17 @@
         "activeTokens": "Active Tokens"
       }
     },
-    "tokenStatus": {
-      "currentPrice": "Current Price",
-      "change24h": "24h Change",
-      "marketCap": "Market Cap",
-      "volume24h": "24h Volume"
+    "token": {
+      "status": {
+        "currentPrice": "Current Price",
+        "change24h": "24h Change",
+        "marketCap": "Market Cap",
+        "volume24h": "24h Volume"
+      },
+      "loadingError": "Failed to connect to token list. There may be some network problems"
+    },
+    "search": {
+      "placeholder": "🔍 Search tokens by name..."
     }
   }
 }
