@@ -2,11 +2,21 @@
 
 import { Skeleton } from "@/components/ui/skeleton";
 import {
+  Pagination,
+  PaginationContent,
+  PaginationEllipsis,
+  PaginationFirst,
+  PaginationItem,
+  PaginationLast,
+  PaginationLink,
+} from "@/components/ui/pagination";
+import {
   MarketStatusResponse,
   TokenData,
   TokenListResponse,
 } from "@/types/token";
 import Link from "next/link";
+import React from "react";
 import { useTranslations } from "next-intl";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
@@ -47,6 +57,8 @@ export default function TokenMarket() {
   ]);
   /* prettier-ignore */
   const [tokens, setTokens] = useState<TokenData[]>([]);
+  /* prettier-ignore */
+  const [paginationTotalPage, setPaginationTotalPage] = useState<number>(1);
 
   const fetchTokenMarketStatus = async () => {
     try {
@@ -83,6 +95,7 @@ export default function TokenMarket() {
 
       if (res.data !== null) {
         setTokens(res.data.list);
+        setPaginationTotalPage(res.data.totalPages);
       } else throw new Error("Failed to connect to token list");
     } catch (err) {}
   };
@@ -91,6 +104,10 @@ export default function TokenMarket() {
     fetchTokenMarketStatus();
     fetchTokenList();
   }, []);
+
+  useEffect(() => {
+    fetchTokenList();
+  }, [paginationIndex]);
 
   return (
     <main id="token-market-wrapper" className={`pt-8`}>
@@ -157,61 +174,189 @@ export default function TokenMarket() {
 
         {/* Token Grid Section */}
         <section
-          id="token-grid"
-          className={`grid grid-cols-1 md:grid-cols-2 gap-6 bg-background rounded-xl p-8 mb-8 
+          id="token-list"
+          className={`bg-background rounded-xl p-8 mb-8 
             text-center shadow-[0_1px_3px_rgba(0,0,0,0.05)]`}
         >
-          {tokens.length === 0
-            ? new Array(10).fill(0).map((_) => (
-                <div
-                  id={`token-skeleton-wrapper`}
-                  className={`rounded-2xl p-6 bg-background border-1 shadow-[0_1px_3px_rgba(0,0,0,0.05)]
-                    transition-all duration-350 hover:border-primary hover:-translate-y-1 cursor-pointer`}
-                  key={uuidv4()}
-                >
-                  <Skeleton className={`w-[100px] h-[100px]`} />
-                </div>
-              ))
-            : tokens.map((token) => (
-                <Link href={`/token/${token.symbol}`} key={token.symbol}>
+          <div
+            id="token-grid"
+            className={`grid grid-cols-1 md:grid-cols-2 gap-6 mb-6`}
+          >
+            {tokens.length === 0
+              ? new Array(10).fill(0).map((_) => (
                   <div
-                    id={`token-${token.symbol}-card`}
+                    id={`token-skeleton-wrapper`}
                     className={`rounded-2xl p-6 bg-background border-1 shadow-[0_1px_3px_rgba(0,0,0,0.05)]
-                      transition-all duration-350 hover:border-primary hover:-translate-y-1 cursor-pointer`}
+                    transition-all duration-350 hover:border-primary hover:-translate-y-1 cursor-pointer`}
+                    key={uuidv4()}
                   >
+                    <Skeleton className={`w-[100px] h-[100px]`} />
+                  </div>
+                ))
+              : tokens.map((token) => (
+                  <Link href={`/token/${token.symbol}`} key={token.symbol}>
                     <div
-                      id="token-header"
-                      className={`flex items-center gap-4 mb-4`}
+                      id={`token-${token.symbol}-card`}
+                      className={`rounded-2xl p-6 bg-background border-1 shadow-[0_1px_3px_rgba(0,0,0,0.05)]
+                      transition-all duration-350 hover:border-primary hover:-translate-y-1 cursor-pointer`}
                     >
                       <div
-                        id="token-logo"
-                        className={`w-[40px] h-[40px] rounded-full flex items-center justify-center
-                          text-2xl font-bold mr-4 shrink-0 overflow-hidden relative p-1`}
+                        id="token-header"
+                        className={`flex items-center gap-4 mb-4`}
                       >
-                        <img
-                          src={token.image}
-                          alt={token.name}
-                          className={`w-full h-full object-cover rounded-full`}
-                        />
+                        <div
+                          id="token-logo"
+                          className={`w-[40px] h-[40px] rounded-full flex items-center justify-center
+                          text-2xl font-bold mr-4 shrink-0 overflow-hidden relative p-1`}
+                        >
+                          <img
+                            src={token.image}
+                            alt={token.name}
+                            className={`w-full h-full object-cover rounded-full`}
+                          />
+                        </div>
+                        <div id="token-info" className={`flex-1`}>
+                          <div
+                            id="token-name"
+                            className={`text-lg font-semibold mb-1 text-left`}
+                          >
+                            {token.name}
+                          </div>
+                          <div
+                            id="token-symbol"
+                            className={`text-sm font-medium text-gray-400 text-left`}
+                          >
+                            {token.symbol}
+                          </div>
+                        </div>
                       </div>
-                      <div id="token-info" className={`flex-1`}>
-                        <div
-                          id="token-name"
-                          className={`text-lg font-semibold mb-1 text-left`}
-                        >
-                          {token.name}
-                        </div>
-                        <div
-                          id="token-symbol"
-                          className={`text-sm font-medium text-gray-400 text-left`}
-                        >
-                          {token.symbol}
-                        </div>
+                      <div
+                        id="token-metric"
+                        className={`grid grid-cols-1 md:grid-cols-2 gap-3 md:gap-4 mb-6`}
+                      >
+                        {[
+                          {
+                            i18n: t("tokenStatus.currentPrice"),
+                            content: "$" + token.currentPrice,
+                          },
+                          {
+                            i18n: t("tokenStatus.change24h"),
+                            content:
+                              parseFloat(token.priceChange24h) < 0 ? (
+                                <span
+                                  className={`text-red-500 dark:text-red-400`}
+                                >
+                                  {parseFloat(token.priceChange24h).toFixed(7)}
+                                </span>
+                              ) : (
+                                <span
+                                  className={`text-green-500 dark:text-green-500`}
+                                >
+                                  {"+" +
+                                    parseFloat(token.priceChange24h).toFixed(7)}
+                                </span>
+                              ),
+                          },
+                          {
+                            i18n: t("tokenStatus.marketCap"),
+                            content: "$" + unit(token.marketCap),
+                          },
+                          {
+                            i18n: t("tokenStatus.volume24h"),
+                            content: "$" + unit(token.totalVolume),
+                          },
+                        ].map((item) => (
+                          <div
+                            id="metric-item"
+                            className={`text-center`}
+                            key={item.i18n}
+                          >
+                            <div
+                              id="metric-value"
+                              className={`text-xl font-bold mb-1`}
+                            >
+                              {item.content}
+                            </div>
+                            <div
+                              id="metric-label"
+                              className={`text-sm font-medium uppercase tracking-wide text-gray-500
+                              dark:text-gray-400`}
+                            >
+                              {item.i18n}
+                            </div>
+                          </div>
+                        ))}
                       </div>
                     </div>
-                  </div>
-                </Link>
-              ))}
+                  </Link>
+                ))}
+          </div>
+          <Pagination>
+            <PaginationContent>
+              <PaginationItem>
+                <PaginationFirst
+                  onClick={() => {
+                    setPaginationIndex(1);
+                    setTokens([]);
+                  }}
+                  className={`cursor-pointer`}
+                />
+              </PaginationItem>
+              {paginationTotalPage <= 3 ? (
+                Array.from(
+                  { length: paginationTotalPage },
+                  (_, i) => 1 + i
+                ).map((num) => (
+                  <PaginationItem key={num}>
+                    <PaginationLink
+                      onClick={() => {
+                        setPaginationIndex(num);
+                        setTokens([]);
+                      }}
+                      className={`cursor-pointer`}
+                      isActive={num === paginationIndex}
+                    >
+                      {num}
+                    </PaginationLink>
+                  </PaginationItem>
+                ))
+              ) : (
+                <React.Fragment>
+                  {(paginationIndex === 1
+                    ? [0, 1, 2]
+                    : paginationIndex === paginationTotalPage
+                    ? [-2, -1, 0]
+                    : [-1, 0, 1]
+                  ).map((num) => (
+                    <PaginationItem key={num}>
+                      <PaginationLink
+                        onClick={() => {
+                          setPaginationIndex(paginationIndex + num);
+                          setTokens([]);
+                        }}
+                        className={`cursor-pointer`}
+                        isActive={num === 0}
+                      >
+                        {paginationIndex + num}
+                      </PaginationLink>
+                    </PaginationItem>
+                  ))}
+                  <PaginationItem>
+                    <PaginationEllipsis />
+                  </PaginationItem>
+                </React.Fragment>
+              )}
+              <PaginationItem>
+                <PaginationLast
+                  onClick={() => {
+                    setPaginationIndex(paginationTotalPage);
+                    setTokens([]);
+                  }}
+                  className={`cursor-pointer`}
+                />
+              </PaginationItem>
+            </PaginationContent>
+          </Pagination>
         </section>
       </div>
     </main>

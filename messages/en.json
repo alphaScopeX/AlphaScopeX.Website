@@ -109,6 +109,12 @@
         "btcDominance": "BTC Dominance",
         "activeTokens": "Active Tokens"
       }
+    },
+    "tokenStatus": {
+      "currentPrice": "Current Price",
+      "change24h": "24h Change",
+      "marketCap": "Market Cap",
+      "volume24h": "24h Volume"
     }
   }
 }
