@@ -28,7 +28,7 @@ export async function GET(
     return NextResponse.json(backendRes.data);
   } catch (err) {
     return NextResponse.json(
-      { error: "Failed to get trader profile." },
+      { error: "Failed to get trader status." },
       { status: err instanceof Error ? 500 : 502 }
     );
   }

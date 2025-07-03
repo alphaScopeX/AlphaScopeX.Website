@@ -3,6 +3,7 @@
 import { cn } from "@/lib/utils";
 import { useEffect, useRef } from "react";
 import { CandleData } from "@/types/candle";
+import { useTheme } from "next-themes";
 
 interface MiniCandleChartProps {
   data: CandleData[];
@@ -38,6 +39,8 @@ export default function MiniCandleChart({
   const outcryTimestamp = new Date(outcry.mentionAt);
   const outcryUnixTimestamp = outcryTimestamp.getTime();
   const outcryPrice = parseFloat(outcry.price);
+
+  const { theme } = useTheme();
 
   useEffect(() => {
     if (canvasRef.current !== null) {
@@ -98,7 +101,7 @@ export default function MiniCandleChart({
 
       ctx.beginPath();
       ctx.arc(outcryX, outcryY, 3, 0, 2 * Math.PI);
-      ctx.strokeStyle = "white";
+      ctx.strokeStyle = theme === "light" ? "white" : "black";
       ctx.lineWidth = 2;
       ctx.stroke();
     }
@@ -113,6 +116,7 @@ export default function MiniCandleChart({
     lineWidth,
     outcry,
     yScaleFactor,
+    theme,
   ]);
 
   return <canvas ref={canvasRef} className={cn(className, `block`)} />;

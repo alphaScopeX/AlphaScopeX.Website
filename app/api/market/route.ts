@@ -7,16 +7,8 @@ export async function GET(
   request: NextRequest
 ): Promise<NextResponse<unknown>> {
   try {
-    const _backendURL = new URL(
-      "/api/v1/market/token-market",
-      backend
-    );
-    const clientQuery = request.nextUrl.searchParams;
-    clientQuery.forEach((value, key) => {
-      _backendURL.searchParams.append(key, value);
-    })
+    const backendURL = new URL(`/api/v1/market/dashboard`, backend).toString();
 
-    const backendURL = _backendURL.toString();
     const backendRes = await axios.get(backendURL, {
       headers: {
         ...(request.headers.get("Authorization") && {
@@ -29,7 +21,7 @@ export async function GET(
     return NextResponse.json(backendRes.data);
   } catch (err) {
     return NextResponse.json(
-      { error: "Failed to get token market" },
+      { error: "Failed to get token market status." },
       { status: err instanceof Error ? 500 : 502 }
     );
   }
