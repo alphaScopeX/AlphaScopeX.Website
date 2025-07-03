@@ -99,7 +99,7 @@ export default function KOLProfile() {
       setProfileName(res.data.name);
       setProfileDescription(res.data.description);
 
-      const tempKOLStatus = kolStatus;
+      const tempKOLStatus = kolStatus.slice();
       tempKOLStatus[4].content = "95%";
       setKOLStatus(tempKOLStatus);
 
@@ -175,7 +175,7 @@ export default function KOLProfile() {
     ).then((response) => response.json());
 
     if (res.data !== null) {
-      const tempKOLOpinionStatus = kolOpinionStatus;
+      const tempKOLOpinionStatus = kolOpinionStatus.slice();
       tempKOLOpinionStatus[0].content = res.data.bullishAccuracy + "%";
       tempKOLOpinionStatus[1].content = res.data.bearishAccuracy + "%";
       tempKOLOpinionStatus[2].content = res.data.neutralAccuracy + "%";

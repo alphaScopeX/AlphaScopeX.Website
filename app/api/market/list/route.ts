@@ -7,10 +7,16 @@ export async function GET(
   request: NextRequest
 ): Promise<NextResponse<unknown>> {
   try {
-    const backendURL = new URL(
+    const _backendURL = new URL(
       "/api/v1/market/token-market",
       backend
-    ).toString();
+    );
+    const clientQuery = request.nextUrl.searchParams;
+    clientQuery.forEach((value, key) => {
+      _backendURL.searchParams.append(key, value);
+    })
+
+    const backendURL = _backendURL.toString();
     const backendRes = await axios.get(backendURL, {
       headers: {
         ...(request.headers.get("Authorization") && {

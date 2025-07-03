@@ -4,7 +4,7 @@
     "description": "Backed by AI. Powered by creators.",
     "header": {
       "home": "Home",
-      "markets": "Markets",
+      "market": "Market",
       "strategies": "Strategies",
       "discussion": "Discussion",
       "creatorHub": "Creator Hub",
@@ -102,6 +102,12 @@
       "loadingError": {
         "title": "Network Error",
         "description": "Failed to connect to market status. There may be some network problems"
+      },
+      "title": {
+        "totalMarketCap": "Total Market Cap",
+        "volume24h": "24h Volume",
+        "btcDominance": "BTC Dominance",
+        "activeTokens": "Active Tokens"
       }
     }
   }
