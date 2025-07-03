@@ -34,7 +34,7 @@ export default function PageHeader({ isHomeHeader }: { isHomeHeader: boolean }) 
   // prettier-ignore
   const navigationLinks: { href: string; i18n: string }[] = [
     { href: "/",            i18n: "header.home" },
-    { href: "/markets",     i18n: "header.markets" },
+    { href: "/market",      i18n: "header.market" },
     { href: "/strategies",  i18n: "header.strategies" },
     { href: "/discussion",  i18n: "header.discussion" },
     { href: "/creator",     i18n: "header.creatorHub" },
