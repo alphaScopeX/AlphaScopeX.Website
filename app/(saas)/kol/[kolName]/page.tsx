@@ -90,26 +90,29 @@ export default function KOLProfile() {
   const { kolName } = useParams<{ [x: string]: string }>();
 
   const fetchKOLInfo = async () => {
-    const res: KOLInfoResponse = await fetch(`/api/kol/${kolName}/info`).then(
-      (response) => response.json()
-    );
+    try {
+      const res: KOLInfoResponse = await fetch(`/api/kol/${kolName}/info`).then(
+        (response) => response.json()
+      );
 
-    if (res.data !== null) {
-      setAvatarImageUrl(res.data.avatar.replace("normal", "400x400"));
-      setProfileName(res.data.name);
-      setProfileDescription(res.data.description);
+      if (res.data !== undefined && res.data !== null) {
+        setAvatarImageUrl(res.data.avatar.replace("normal", "400x400"));
+        setProfileName(res.data.name);
+        setProfileDescription(res.data.description);
 
-      const tempKOLStatus = kolStatus.slice();
-      tempKOLStatus[4].content = "95%";
-      setKOLStatus(tempKOLStatus);
+        const tempKOLStatus = kolStatus.slice();
+        tempKOLStatus[4].content = "95%";
+        setKOLStatus(tempKOLStatus);
 
-      // Now the banner and avatar image url are from x. Backend only returns
-      // normal size avatar, so I replace the `normal` to `400x400`. Now the
-      // avatar is much more clear.
-    } else {
+        // Now the banner and avatar image url are from x. Backend only returns
+        // normal size avatar, so I replace the `normal` to `400x400`. Now the
+        // avatar is much more clear.
+      } else throw new Error("Failed to connect to KOL info");
+    } catch (err) {
       toast.error(t("loadingError.title"), {
         description: t("loadingError.description", { name: kolName }),
       });
+      console.log(err instanceof Error ? err.message : err);
     }
 
     // Sometimes res.data is `null`, so we need to check if it's `null`
@@ -117,76 +120,82 @@ export default function KOLProfile() {
   };
 
   const fetchKOLOpinions = async () => {
-    const res: KOLOpinionResponse = await fetch(
-      `/api/kol/${kolName}/opinion?pn=${paginationIndex}&ps=10`
-    ).then((response) => response.json());
+    try {
+      const res: KOLOpinionResponse = await fetch(
+        `/api/kol/${kolName}/opinion?pn=${paginationIndex}&ps=10`
+      ).then((response) => response.json());
 
-    if (res.data !== null) {
-      const opinions: OpinionTData[] = res.data.result;
+      if (res.data !== undefined && res.data !== null) {
+        const opinions: OpinionTData[] = res.data.result;
 
-      // `forEach` will not wait for the asynchronous function to finish, so React
-      // considers `KOLOpinions[0].kLineData` to be undefined. We should use `Promise.all`
-      // to wait for all asynchronous functions to finish.
+        // `forEach` will not wait for the asynchronous function to finish, so React
+        // considers `KOLOpinions[0].kLineData` to be undefined. We should use `Promise.all`
+        // to wait for all asynchronous functions to finish.
 
-      const opinionsWithKLine = await Promise.all(
-        opinions.map(async (opinion): Promise<OpinionTData> => {
-          const timestamp = new Date(opinion.mentionAt);
-          const unixTimestamp = Math.floor(timestamp.getTime() / 1000);
-          // We need to transform the mentionAt field (which is ISO8601 format)
-          // to unix timestamp.
+        const opinionsWithKLine = await Promise.all(
+          opinions.map(async (opinion): Promise<OpinionTData> => {
+            const timestamp = new Date(opinion.mentionAt);
+            const unixTimestamp = Math.floor(timestamp.getTime() / 1000);
+            // We need to transform the mentionAt field (which is ISO8601 format)
+            // to unix timestamp.
 
-          try {
-            const kLineRes: TokenKLineResponse = await fetch(
-              `/api/market/${opinion.tokenName}/kline?mentionAt=${unixTimestamp}`
-            ).then((response) => response.json());
+            try {
+              const kLineRes: TokenKLineResponse = await fetch(
+                `/api/market/${opinion.tokenName}/kline?mentionAt=${unixTimestamp}`
+              ).then((response) => response.json());
 
-            return {
-              ...opinion,
-              kLineData:
-                kLineRes.data.sort(
-                  (a, b) => parseInt(a.timestamp) - parseInt(b.timestamp)
-                ) || undefined,
-            };
+              return {
+                ...opinion,
+                kLineData:
+                  kLineRes.data.sort(
+                    (a, b) => parseInt(a.timestamp) - parseInt(b.timestamp)
+                  ) || undefined,
+              };
 
-            // Notice `TokenKLineResponse.data` responses as descending order in
-            // `timestamp`.
-          } catch (err) {
-            toast.error(`${err}`);
-            return {
-              ...opinion,
-              kLineData: undefined,
-            };
-          }
-        })
-      );
+              // Notice `TokenKLineResponse.data` responses as descending order in
+              // `timestamp`.
+            } catch (err) {
+              toast.error(`${err}`);
+              return {
+                ...opinion,
+                kLineData: undefined,
+              };
+            }
+          })
+        );
 
-      setKOLOpinions(opinionsWithKLine);
-      setPaginationTotalPage(res.data.totalPage);
-    } else {
+        setKOLOpinions(opinionsWithKLine);
+        setPaginationTotalPage(res.data.totalPage);
+      } else throw new Error("Failed to connect to KOL opinions");
+    } catch (err) {
       toast.error(t("loadingError.title"), {
         description: t("loadingError.description", { name: kolName }),
       });
+      console.error(err instanceof Error ? err.message : err);
     }
   };
 
   const fetchKOLStatus = async () => {
-    const res: KOLStatusResponse = await fetch(
-      `/api/kol/${kolName}/status`
-    ).then((response) => response.json());
+    try {
+      const res: KOLStatusResponse = await fetch(
+        `/api/kol/${kolName}/status`
+      ).then((response) => response.json());
 
-    if (res.data !== null) {
-      const tempKOLOpinionStatus = kolOpinionStatus.slice();
-      tempKOLOpinionStatus[0].content = res.data.bullishAccuracy + "%";
-      tempKOLOpinionStatus[1].content = res.data.bearishAccuracy + "%";
-      tempKOLOpinionStatus[2].content = res.data.neutralAccuracy + "%";
-      tempKOLOpinionStatus[3].content = res.data.totalOpinions.toString();
-      tempKOLOpinionStatus[4].content = res.data.overallAccuracy + "%";
+      if (res.data !== undefined && res.data !== null) {
+        const tempKOLOpinionStatus = kolOpinionStatus.slice();
+        tempKOLOpinionStatus[0].content = res.data.bullishAccuracy + "%";
+        tempKOLOpinionStatus[1].content = res.data.bearishAccuracy + "%";
+        tempKOLOpinionStatus[2].content = res.data.neutralAccuracy + "%";
+        tempKOLOpinionStatus[3].content = res.data.totalOpinions.toString();
+        tempKOLOpinionStatus[4].content = res.data.overallAccuracy + "%";
 
-      setKOLOpinionStatus(tempKOLOpinionStatus);
-    } else {
+        setKOLOpinionStatus(tempKOLOpinionStatus);
+      } else throw new Error("Failed to connect to KOL status");
+    } catch (err) {
       toast.error(t("loadingError.title"), {
         description: t("loadingError.description", { name: kolName }),
       });
+      console.error(err instanceof Error ? err.message : err);
     }
   };
 
