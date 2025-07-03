@@ -4,7 +4,7 @@
     "description": "Backed by AI. Powered by creators.",
     "header": {
       "home": "Home",
-      "markets": "Markets",
+      "market": "Market",
       "strategies": "Strategies",
       "discussion": "Discussion",
       "creatorHub": "Creator Hub",
@@ -93,6 +93,37 @@
       "recentActivity": {
         "title": "⚡ Recent Activity"
       }
+    }
+  },
+  "marketPage": {
+    "title": "Token Market",
+    "subtitle": "Explore trending tokens and their on-chain metrics",
+    "status": {
+      "loadingError": {
+        "title": "Network Error",
+        "description": "Failed to connect to market status. There may be some network problems"
+      },
+      "title": {
+        "totalMarketCap": "Total Market Cap",
+        "volume24h": "24h Volume",
+        "btcDominance": "BTC Dominance",
+        "activeTokens": "Active Tokens"
+      }
+    },
+    "token": {
+      "status": {
+        "currentPrice": "Current Price",
+        "change24h": "24h Change",
+        "marketCap": "Market Cap",
+        "volume24h": "24h Volume"
+      },
+      "loadingError": {
+        "title": "Network Error",
+        "description": "Failed to connect to token list. There may be some network problems"
+      }
+    },
+    "search": {
+      "placeholder": "🔍 Search tokens by name..."
     }
   }
 }
