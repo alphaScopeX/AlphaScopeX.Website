@@ -222,7 +222,7 @@ export default function TokenMarket() {
               <div className=""></div>
             ) : (
               tokens.map((token) => (
-                <Link href={`/token/${token.symbol}`} key={token.symbol}>
+                <Link href={`/token/${token.symbol}`} key={uuidv4()}>
                   <div
                     id={`token-${token.symbol}-card`}
                     className={`rounded-2xl p-6 bg-background border-1 shadow-[0_1px_3px_rgba(0,0,0,0.05)]
