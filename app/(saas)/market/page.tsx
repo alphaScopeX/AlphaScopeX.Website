@@ -22,6 +22,7 @@ import { useEffect, useState } from "react";
 import { toast } from "sonner";
 import { v4 as uuidv4 } from "uuid";
 import { Input } from "@/components/ui/input";
+import { PackageOpen } from "lucide-react";
 
 interface MarketStatusContent {
   i18n: string;
@@ -189,7 +190,7 @@ export default function TokenMarket() {
           <Input
             type="search"
             placeholder={t("search.placeholder")}
-            className={`mb-6 w-2/3`}
+            className={`mb-6 w-1/2`}
             value={searchTokenName}
             onChange={(e) => setSearchTokenName(e.target.value)}
             onKeyDown={(e) => {
@@ -199,12 +200,13 @@ export default function TokenMarket() {
               }
             }}
           />
-          <div
-            id="token-grid"
-            className={`grid grid-cols-1 md:grid-cols-2 gap-6 mb-6`}
-          >
-            {tokens === undefined ? (
-              new Array(10).fill(0).map(() => (
+
+          {tokens === undefined ? (
+            <div
+              id="token-grid"
+              className={`grid grid-cols-1 md:grid-cols-2 gap-6 mb-6`}
+            >
+              {new Array(10).fill(0).map(() => (
                 <div
                   id={`token-skeleton-wrapper`}
                   className={`rounded-2xl p-6 bg-background border-1 shadow-[0_1px_3px_rgba(0,0,0,0.05)]
@@ -217,11 +219,19 @@ export default function TokenMarket() {
                   <Skeleton className={`w-[250px] h-4`} />
                   <Skeleton className={`w-[200px] h-4`} />
                 </div>
-              ))
-            ) : tokens.length === 0 ? (
-              <div className=""></div>
-            ) : (
-              tokens.map((token) => (
+              ))}
+            </div>
+          ) : tokens.length === 0 ? (
+            <div className={`flex justify-center items-center mb-6`}>
+              <PackageOpen className={`mr-6`} />
+              {t("search.notFound")}
+            </div>
+          ) : (
+            <div
+              id="token-grid"
+              className={`grid grid-cols-1 md:grid-cols-2 gap-6 mb-6`}
+            >
+              {tokens.map((token) => (
                 <Link href={`/token/${token.symbol}`} key={uuidv4()}>
                   <div
                     id={`token-${token.symbol}-card`}
@@ -317,9 +327,9 @@ export default function TokenMarket() {
                     </div>
                   </div>
                 </Link>
-              ))
-            )}
-          </div>
+              ))}
+            </div>
+          )}
           <Pagination>
             <PaginationContent>
               <PaginationItem>
