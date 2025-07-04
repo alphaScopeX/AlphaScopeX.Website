@@ -57,7 +57,7 @@ export default function TokenMarket() {
     { i18n: t("status.title.activeTokens"),   content: "..." },
   ]);
   /* prettier-ignore */
-  const [tokens, setTokens] = useState<TokenData[]>([]);
+  const [tokens, setTokens] = useState<TokenData[] | undefined>(undefined);
   /* prettier-ignore */
   const [paginationTotalPage, setPaginationTotalPage] = useState<number>(1);
   /* prettier-ignore */
@@ -101,8 +101,8 @@ export default function TokenMarket() {
         setPaginationTotalPage(res.data.totalPages);
       } else throw new Error("Failed to connect to token list");
     } catch (err) {
-      toast.error(t("token.status.loadingError.title"), {
-        description: t("token.status.loadingError.description"),
+      toast.error(t("token.loadingError.title"), {
+        description: t("token.loadingError.description"),
       });
       console.error(err instanceof Error ? err.message : err);
     }
@@ -196,125 +196,129 @@ export default function TokenMarket() {
               if (e.key === "Enter") {
                 setTokens([]);
                 fetchTokenList();
-              };
+              }
             }}
           />
           <div
             id="token-grid"
             className={`grid grid-cols-1 md:grid-cols-2 gap-6 mb-6`}
           >
-            {tokens.length === 0
-              ? new Array(10).fill(0).map(() => (
-                  <div
-                    id={`token-skeleton-wrapper`}
-                    className={`rounded-2xl p-6 bg-background border-1 shadow-[0_1px_3px_rgba(0,0,0,0.05)]
+            {tokens === undefined ? (
+              new Array(10).fill(0).map(() => (
+                <div
+                  id={`token-skeleton-wrapper`}
+                  className={`rounded-2xl p-6 bg-background border-1 shadow-[0_1px_3px_rgba(0,0,0,0.05)]
                     transition-all duration-350 hover:border-primary hover:-translate-y-1 cursor-pointer
                     flex flex-col gap-4`}
-                    key={uuidv4()}
-                  >
-                    <Skeleton className={`w-[100px] h-[100px]`} />
-                    <Skeleton className={`w-[300px] h-4`} />
-                    <Skeleton className={`w-[250px] h-4`} />
-                    <Skeleton className={`w-[200px] h-4`} />
-                  </div>
-                ))
-              : tokens.map((token) => (
-                  <Link href={`/token/${token.symbol}`} key={token.symbol}>
-                    <div
-                      id={`token-${token.symbol}-card`}
-                      className={`rounded-2xl p-6 bg-background border-1 shadow-[0_1px_3px_rgba(0,0,0,0.05)]
+                  key={uuidv4()}
+                >
+                  <Skeleton className={`w-[100px] h-[100px]`} />
+                  <Skeleton className={`w-[300px] h-4`} />
+                  <Skeleton className={`w-[250px] h-4`} />
+                  <Skeleton className={`w-[200px] h-4`} />
+                </div>
+              ))
+            ) : tokens.length === 0 ? (
+              <div className=""></div>
+            ) : (
+              tokens.map((token) => (
+                <Link href={`/token/${token.symbol}`} key={token.symbol}>
+                  <div
+                    id={`token-${token.symbol}-card`}
+                    className={`rounded-2xl p-6 bg-background border-1 shadow-[0_1px_3px_rgba(0,0,0,0.05)]
                       transition-all duration-350 hover:border-primary hover:-translate-y-1 cursor-pointer`}
+                  >
+                    <div
+                      id="token-header"
+                      className={`flex items-center gap-4 mb-4`}
                     >
                       <div
-                        id="token-header"
-                        className={`flex items-center gap-4 mb-4`}
-                      >
-                        <div
-                          id="token-logo"
-                          className={`w-[40px] h-[40px] rounded-full flex items-center justify-center
+                        id="token-logo"
+                        className={`w-[40px] h-[40px] rounded-full flex items-center justify-center
                           text-2xl font-bold mr-4 shrink-0 overflow-hidden relative p-1`}
-                        >
-                          <img
-                            src={token.image}
-                            alt={token.name}
-                            className={`w-full h-full object-cover rounded-full`}
-                          />
-                        </div>
-                        <div id="token-info" className={`flex-1`}>
-                          <div
-                            id="token-name"
-                            className={`text-lg font-semibold mb-1 text-left`}
-                          >
-                            {token.name}
-                          </div>
-                          <div
-                            id="token-symbol"
-                            className={`text-sm font-medium text-gray-400 text-left`}
-                          >
-                            {token.symbol}
-                          </div>
-                        </div>
-                      </div>
-                      <div
-                        id="token-metric"
-                        className={`grid grid-cols-1 md:grid-cols-2 gap-3 md:gap-4 mb-6`}
                       >
-                        {[
-                          {
-                            i18n: t("token.status.currentPrice"),
-                            content: "$" + token.currentPrice,
-                          },
-                          {
-                            i18n: t("token.status.change24h"),
-                            content:
-                              parseFloat(token.priceChange24h) < 0 ? (
-                                <span
-                                  className={`text-red-500 dark:text-red-400`}
-                                >
-                                  {parseFloat(token.priceChange24h).toFixed(7)}
-                                </span>
-                              ) : (
-                                <span
-                                  className={`text-green-500 dark:text-green-500`}
-                                >
-                                  {"+" +
-                                    parseFloat(token.priceChange24h).toFixed(7)}
-                                </span>
-                              ),
-                          },
-                          {
-                            i18n: t("token.status.marketCap"),
-                            content: "$" + unit(token.marketCap),
-                          },
-                          {
-                            i18n: t("token.status.volume24h"),
-                            content: "$" + unit(token.totalVolume),
-                          },
-                        ].map((item) => (
-                          <div
-                            id="metric-item"
-                            className={`text-center`}
-                            key={item.i18n}
-                          >
-                            <div
-                              id="metric-value"
-                              className={`text-xl font-bold mb-1`}
-                            >
-                              {item.content}
-                            </div>
-                            <div
-                              id="metric-label"
-                              className={`text-sm font-medium uppercase tracking-wide text-gray-500
-                              dark:text-gray-400`}
-                            >
-                              {item.i18n}
-                            </div>
-                          </div>
-                        ))}
+                        <img
+                          src={token.image}
+                          alt={token.name}
+                          className={`w-full h-full object-cover rounded-full`}
+                        />
+                      </div>
+                      <div id="token-info" className={`flex-1`}>
+                        <div
+                          id="token-name"
+                          className={`text-lg font-semibold mb-1 text-left`}
+                        >
+                          {token.name}
+                        </div>
+                        <div
+                          id="token-symbol"
+                          className={`text-sm font-medium text-gray-400 text-left`}
+                        >
+                          {token.symbol}
+                        </div>
                       </div>
                     </div>
-                  </Link>
-                ))}
+                    <div
+                      id="token-metric"
+                      className={`grid grid-cols-1 md:grid-cols-2 gap-3 md:gap-4 mb-6`}
+                    >
+                      {[
+                        {
+                          i18n: t("token.status.currentPrice"),
+                          content: "$" + token.currentPrice,
+                        },
+                        {
+                          i18n: t("token.status.change24h"),
+                          content:
+                            parseFloat(token.priceChange24h) < 0 ? (
+                              <span
+                                className={`text-red-500 dark:text-red-400`}
+                              >
+                                {parseFloat(token.priceChange24h).toFixed(7)}
+                              </span>
+                            ) : (
+                              <span
+                                className={`text-green-500 dark:text-green-500`}
+                              >
+                                {"+" +
+                                  parseFloat(token.priceChange24h).toFixed(7)}
+                              </span>
+                            ),
+                        },
+                        {
+                          i18n: t("token.status.marketCap"),
+                          content: "$" + unit(token.marketCap),
+                        },
+                        {
+                          i18n: t("token.status.volume24h"),
+                          content: "$" + unit(token.totalVolume),
+                        },
+                      ].map((item) => (
+                        <div
+                          id="metric-item"
+                          className={`text-center`}
+                          key={item.i18n}
+                        >
+                          <div
+                            id="metric-value"
+                            className={`text-xl font-bold mb-1`}
+                          >
+                            {item.content}
+                          </div>
+                          <div
+                            id="metric-label"
+                            className={`text-sm font-medium uppercase tracking-wide text-gray-500
+                              dark:text-gray-400`}
+                          >
+                            {item.i18n}
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                </Link>
+              ))
+            )}
           </div>
           <Pagination>
             <PaginationContent>
