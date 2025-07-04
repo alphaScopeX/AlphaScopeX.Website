@@ -217,7 +217,7 @@ export default function TokenMarket() {
               className={`grid grid-cols-1 md:grid-cols-2 gap-6 mb-6`}
             >
               {tokens.map((token) => (
-                <Link href={`/token/${token.symbol}`} key={uuidv4()}>
+                <Link href={`/token/${token.name.replaceAll(" ", "-")}`} key={uuidv4()}>
                   <div
                     id={`token-${token.symbol}-card`}
                     className={`rounded-2xl p-6 bg-background border-1 shadow-[0_1px_3px_rgba(0,0,0,0.05)]
@@ -321,7 +321,7 @@ export default function TokenMarket() {
                 <PaginationFirst
                   onClick={() => {
                     setPaginationIndex(1);
-                    setTokens([]);
+                    setTokens(undefined);
                   }}
                   className={`cursor-pointer`}
                 />
@@ -335,7 +335,7 @@ export default function TokenMarket() {
                     <PaginationLink
                       onClick={() => {
                         setPaginationIndex(num);
-                        setTokens([]);
+                        setTokens(undefined);
                       }}
                       className={`cursor-pointer`}
                       isActive={num === paginationIndex}
@@ -356,7 +356,7 @@ export default function TokenMarket() {
                       <PaginationLink
                         onClick={() => {
                           setPaginationIndex(paginationIndex + num);
-                          setTokens([]);
+                          setTokens(undefined);
                         }}
                         className={`cursor-pointer`}
                         isActive={num === 0}
@@ -374,7 +374,7 @@ export default function TokenMarket() {
                 <PaginationLast
                   onClick={() => {
                     setPaginationIndex(paginationTotalPage);
-                    setTokens([]);
+                    setTokens(undefined);
                   }}
                   className={`cursor-pointer`}
                 />
