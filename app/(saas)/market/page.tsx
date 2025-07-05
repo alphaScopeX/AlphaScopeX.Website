@@ -23,6 +23,7 @@ import { toast } from "sonner";
 import { v4 as uuidv4 } from "uuid";
 import { Input } from "@/components/ui/input";
 import { PackageOpen } from "lucide-react";
+import { unit } from "@/lib/utils";
 
 interface MarketStatusContent {
   i18n: string;
@@ -31,22 +32,6 @@ interface MarketStatusContent {
 
 export default function TokenMarket() {
   const t = useTranslations("marketPage");
-
-  const unit = (raw: string): string => {
-    const integerLen = raw.indexOf(".") === -1 ? raw.length : raw.indexOf(".");
-
-    if (integerLen < 3) {
-      return raw;
-    } else if (integerLen >= 3 && integerLen < 6) {
-      return (parseFloat(raw) / Math.pow(10, 3)).toFixed(2) + "K";
-    } else if (integerLen >= 6 && integerLen < 9) {
-      return (parseFloat(raw) / Math.pow(10, 6)).toFixed(2) + "M";
-    } else if (integerLen >= 9 && integerLen < 12) {
-      return (parseFloat(raw) / Math.pow(10, 9)).toFixed(2) + "B";
-    } else {
-      return (parseFloat(raw) / Math.pow(10, 12)).toFixed(2) + "T";
-    }
-  };
 
   /* prettier-ignore */
   const [paginationIndex, setPaginationIndex] = useState<number>(1);
@@ -232,7 +217,7 @@ export default function TokenMarket() {
               className={`grid grid-cols-1 md:grid-cols-2 gap-6 mb-6`}
             >
               {tokens.map((token) => (
-                <Link href={`/token/${token.symbol}`} key={uuidv4()}>
+                <Link href={`/token/${token.name.replaceAll(" ", "-")}`} key={uuidv4()}>
                   <div
                     id={`token-${token.symbol}-card`}
                     className={`rounded-2xl p-6 bg-background border-1 shadow-[0_1px_3px_rgba(0,0,0,0.05)]
@@ -336,7 +321,7 @@ export default function TokenMarket() {
                 <PaginationFirst
                   onClick={() => {
                     setPaginationIndex(1);
-                    setTokens([]);
+                    setTokens(undefined);
                   }}
                   className={`cursor-pointer`}
                 />
@@ -350,7 +335,7 @@ export default function TokenMarket() {
                     <PaginationLink
                       onClick={() => {
                         setPaginationIndex(num);
-                        setTokens([]);
+                        setTokens(undefined);
                       }}
                       className={`cursor-pointer`}
                       isActive={num === paginationIndex}
@@ -371,7 +356,7 @@ export default function TokenMarket() {
                       <PaginationLink
                         onClick={() => {
                           setPaginationIndex(paginationIndex + num);
-                          setTokens([]);
+                          setTokens(undefined);
                         }}
                         className={`cursor-pointer`}
                         isActive={num === 0}
@@ -389,7 +374,7 @@ export default function TokenMarket() {
                 <PaginationLast
                   onClick={() => {
                     setPaginationIndex(paginationTotalPage);
-                    setTokens([]);
+                    setTokens(undefined);
                   }}
                   className={`cursor-pointer`}
                 />
