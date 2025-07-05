@@ -123,7 +123,16 @@
       }
     },
     "search": {
-      "placeholder": "🔍 Search tokens by name..."
+      "placeholder": "🔍 Search tokens by name...",
+      "notFound": "No relevant token found."
+    }
+  },
+  "tokenDetailsPage": {
+    "status": {
+      "loadingError": {
+        "title": "Network Error",
+        "description": "Failed to connect to token details. There may be some network problems"
+      }
     }
   }
 }
