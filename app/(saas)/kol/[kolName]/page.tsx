@@ -9,7 +9,7 @@ import {
 } from "@/types/kol";
 import { useTranslations } from "next-intl";
 import { useParams } from "next/navigation";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useCallback } from "react";
 import { toast } from "sonner";
 import { v4 as uuidv4 } from "uuid";
 import { cn } from "@/lib/utils";
@@ -87,9 +87,9 @@ export default function KOLProfile() {
   /* prettier-ignore */
   const [paginationTotalPage, setPaginationTotalPage] = useState<number>(1);
 
-  const { kolName } = useParams<{ [x: string]: string }>();
+  const { kolName } = useParams<{ kolName: string }>();
 
-  const fetchKOLInfo = async () => {
+  const fetchKOLInfo = useCallback(async () => {
     try {
       const res: KOLInfoResponse = await fetch(`/api/kol/${kolName}/info`).then(
         (response) => response.json()
@@ -117,9 +117,9 @@ export default function KOLProfile() {
 
     // Sometimes res.data is `null`, so we need to check if it's `null`
     // and only set variables when it's not `null`.
-  };
+  }, [kolName, t]);
 
-  const fetchKOLOpinions = async () => {
+  const fetchKOLOpinions = useCallback(async () => {
     try {
       const res: KOLOpinionResponse = await fetch(
         `/api/kol/${kolName}/opinion?pn=${paginationIndex}&ps=10`
@@ -173,9 +173,9 @@ export default function KOLProfile() {
       });
       console.error(err instanceof Error ? err.message : err);
     }
-  };
+  }, [kolName, t]);
 
-  const fetchKOLStatus = async () => {
+  const fetchKOLStatus = useCallback(async () => {
     try {
       const res: KOLStatusResponse = await fetch(
         `/api/kol/${kolName}/status`
@@ -197,7 +197,7 @@ export default function KOLProfile() {
       });
       console.error(err instanceof Error ? err.message : err);
     }
-  };
+  }, [kolName, t]);
 
   const kolIdentityBadges: string[] = [
     "🔒 zk-verified",
@@ -233,7 +233,7 @@ export default function KOLProfile() {
     fetchKOLInfo();
     fetchKOLOpinions();
     fetchKOLStatus();
-  }, []);
+  }, [kolName]);
 
   useEffect(() => {
     fetchKOLOpinions();
