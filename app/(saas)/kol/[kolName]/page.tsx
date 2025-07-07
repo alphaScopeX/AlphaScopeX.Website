@@ -119,7 +119,8 @@ export default function KOLProfile() {
     // and only set variables when it's not `null`.
   }, [kolName, t]);
 
-  const fetchKOLOpinions = useCallback(async () => {
+  /* This function cannot use `useCallback` because the fetch url is related to `paginationIndex` */
+  const fetchKOLOpinions = async () => {
     try {
       const res: KOLOpinionResponse = await fetch(
         `/api/kol/${kolName}/opinion?pn=${paginationIndex}&ps=10`
@@ -174,7 +175,7 @@ export default function KOLProfile() {
       });
       console.error(err instanceof Error ? err.message : err);
     }
-  }, [kolName, t]);
+  };
 
   const fetchKOLStatus = useCallback(async () => {
     try {
@@ -238,6 +239,7 @@ export default function KOLProfile() {
 
   useEffect(() => {
     fetchKOLOpinions();
+    console.log(paginationIndex)
   }, [paginationIndex]);
 
   /** This component is only used for table in `KOLProfile` page. */
