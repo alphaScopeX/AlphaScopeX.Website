@@ -147,13 +147,14 @@ export default function KOLProfile() {
               return {
                 ...opinion,
                 kLineData:
-                  kLineRes.data.sort(
+                  kLineRes?.data?.sort(
                     (a, b) => parseInt(a.timestamp) - parseInt(b.timestamp)
                   ) || undefined,
               };
 
               // Notice `TokenKLineResponse.data` responses as descending order in
-              // `timestamp`.
+              // `timestamp`. And sometimes the token is not in our database (okx), the
+              // kLineRes.data will be `null`, then it will cause a error.
             } catch (err) {
               toast.error(`${err}`);
               return {
