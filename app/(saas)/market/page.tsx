@@ -24,11 +24,7 @@ import { v4 as uuidv4 } from "uuid";
 import { Input } from "@/components/ui/input";
 import { PackageOpen } from "lucide-react";
 import { unit } from "@/lib/utils";
-
-interface MarketStatusContent {
-  i18n: string;
-  content: string;
-}
+import { StatusContent as MarketStatusContent } from "@/types/utils";
 
 export default function TokenMarket() {
   const t = useTranslations("marketPage");
@@ -254,7 +250,7 @@ export default function TokenMarket() {
                       </div>
                     </div>
                     <div
-                      id="token-metric"
+                      id="token-status"
                       className={`grid grid-cols-1 md:grid-cols-2 gap-3 md:gap-4 mb-6`}
                     >
                       {[
@@ -290,18 +286,18 @@ export default function TokenMarket() {
                         },
                       ].map((item) => (
                         <div
-                          id="metric-item"
+                          id="token-status-item"
                           className={`text-center`}
                           key={item.i18n}
                         >
                           <div
-                            id="metric-value"
+                            id="token-status-value"
                             className={`text-xl font-bold mb-1`}
                           >
                             {item.content}
                           </div>
                           <div
-                            id="metric-label"
+                            id="token-status-label"
                             className={`text-sm font-medium uppercase tracking-wide text-gray-500
                               dark:text-gray-400`}
                           >

@@ -4,15 +4,16 @@ import { useTranslations } from "next-intl";
 import { useParams } from "next/navigation";
 import { TokenData, TokenListResponse } from "@/types/token";
 import { toast } from "sonner";
-import React, { useEffect, useState, useCallback } from "react";
+import React, { useEffect, useState, useCallback, useRef } from "react";
 import { Skeleton } from "@/components/ui/skeleton";
 import CopyableLabel from "@/components/copyable-label";
+import { Avatar, AvatarFallback, AvatarImage } from "@radix-ui/react-avatar";
 
 export default function TokenDetails() {
   const t = useTranslations("tokenDetailsPage");
 
   /* prettier-ignore */
-  const [tokenStatus, setTokenStatus] = useState<TokenData | undefined>(undefined);
+  const [tokenDetails, setTokenDetails] = useState<TokenData | undefined>(undefined);
 
   let { tokenName } = useParams<{ tokenName: string }>();
   tokenName = tokenName.replaceAll("-", " ");
@@ -37,7 +38,7 @@ export default function TokenDetails() {
         res.data !== null &&
         res.data.list.length !== 0
       ) {
-        setTokenStatus(res.data.list[0]);
+        setTokenDetails(res.data.list[0]);
       } else throw new Error("Failed to connect to token list");
     } catch (err) {
       toast.error(t("status.loadingError.title"), {
@@ -69,34 +70,100 @@ export default function TokenDetails() {
               className={`w-[80px] h-[80px] rounded-full flex items-center justify-center
                 text-[2rem] font-bold overflow-hidden relative`}
             >
-              {tokenStatus === undefined ? (
+              {tokenDetails === undefined ? (
                 <Skeleton className={`w-full h-full rounded-full`} />
               ) : (
-                <img
-                  src={tokenStatus.image}
-                  alt={`Token ${tokenName}`}
-                  className={`w-full h-full rounded-full object-cover`}
-                />
+                <Avatar
+                  id="token-info-avatar"
+                  className={`w-[120px] h-[120px] max-md:w-[100px] max-md:h-[100px] rounded-full
+                    flex items-center justify-center`}
+                >
+                  <AvatarImage
+                    src={tokenDetails.image}
+                    alt={t("avatarImage.alt", { name: tokenName })}
+                    id="profile-avatar-image"
+                    className={`overflow-hidden justify-center`}
+                  />
+                  <AvatarFallback>
+                    <Skeleton
+                      className={`w-[120px] h-[120px] max-md:w-[80px] max-md:h-[80px]`}
+                    />
+                  </AvatarFallback>
+                </Avatar>
               )}
             </div>
           </div>
-          <div id="token-details">
-            {tokenStatus === undefined ? (
+          <div id="token-details" className={`w-full`}>
+            {tokenDetails === undefined ? (
               <Skeleton />
             ) : (
               <React.Fragment>
                 <CopyableLabel
-                  className={`text-[2rem] font-bold`}
+                  className={`text-[2rem] font-bold mb-2`}
                   content={tokenName}
                   copiedText={tokenName}
                   description={`Token name ${tokenName}`}
                 />
                 <CopyableLabel
-                  className={`text-gray-400`}
-                  content={`$${tokenStatus.symbol}`}
-                  copiedText={tokenStatus.symbol}
-                  description={`Token symbol ${tokenStatus.symbol}`}
+                  className={`text-gray-400 mb-2`}
+                  content={`$${tokenDetails.symbol}`}
+                  copiedText={tokenDetails.symbol}
+                  description={`Token symbol ${tokenDetails.symbol}`}
                 />
+                <div
+                  id="token-status"
+                  className={`w-full grid grid-cols-2 md:grid-cols-4 gap-8`}
+                >
+                  {[
+                    {
+                      i18n: t("status.currentPrice"),
+                      content: "$" + tokenDetails.currentPrice,
+                    },
+                    {
+                      i18n: t("status.change24h"),
+                      content:
+                        parseFloat(tokenDetails.currentPrice) < 0 ? (
+                          <span className={`text-red-500 dark:text-red-400`}>
+                            {parseFloat(tokenDetails.currentPrice).toFixed(7)}
+                          </span>
+                        ) : (
+                          <span
+                            className={`text-green-500 dark:text-green-400`}
+                          >
+                            {"+" +
+                              parseFloat(tokenDetails.currentPrice).toFixed(7)}
+                          </span>
+                        ),
+                    },
+                    {
+                      i18n: t("status.marketCap"),
+                      content: "$" + tokenDetails.marketCap
+                    },
+                    {
+                      i18n: t("status.volume24h"),
+                      content: "$" + tokenDetails.totalVolume
+                    }
+                  ].map((status) => (
+                    <div
+                      id="token-status-item"
+                      key={status.i18n}
+                      className={`text-center`}
+                    >
+                      <div
+                        id="token-status-value"
+                        className={`text-xl font-bold mb-1`}
+                      >
+                        {status.content}
+                      </div>
+                      <div
+                        id="token-status-label"
+                        className={`text-[0.875rem] font-medium text-gray-500 dark:text-gray-400`}
+                      >
+                        {status.i18n}
+                      </div>
+                    </div>
+                  ))}
+                </div>
               </React.Fragment>
             )}
           </div>
