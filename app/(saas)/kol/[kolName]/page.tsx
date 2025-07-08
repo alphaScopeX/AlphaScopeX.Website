@@ -558,7 +558,7 @@ export default function KOLProfile() {
                             id="opinion-status-value"
                             className={`text-[2.5rem] font-bold`}
                           >
-                            <PercentStatus content={status.content} />
+                            <PercentStatus content={status.content as string} />
                           </div>
                           <div
                             id="opinion-status-label"

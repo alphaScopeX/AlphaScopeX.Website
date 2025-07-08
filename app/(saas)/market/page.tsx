@@ -250,7 +250,7 @@ export default function TokenMarket() {
                       </div>
                     </div>
                     <div
-                      id="token-metric"
+                      id="token-status"
                       className={`grid grid-cols-1 md:grid-cols-2 gap-3 md:gap-4 mb-6`}
                     >
                       {[
@@ -286,18 +286,18 @@ export default function TokenMarket() {
                         },
                       ].map((item) => (
                         <div
-                          id="metric-item"
+                          id="token-status-item"
                           className={`text-center`}
                           key={item.i18n}
                         >
                           <div
-                            id="metric-value"
+                            id="token-status-value"
                             className={`text-xl font-bold mb-1`}
                           >
                             {item.content}
                           </div>
                           <div
-                            id="metric-label"
+                            id="token-status-label"
                             className={`text-sm font-medium uppercase tracking-wide text-gray-500
                               dark:text-gray-400`}
                           >
