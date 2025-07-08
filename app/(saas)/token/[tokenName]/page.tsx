@@ -4,7 +4,7 @@ import { useTranslations } from "next-intl";
 import { useParams } from "next/navigation";
 import { TokenData, TokenListResponse } from "@/types/token";
 import { toast } from "sonner";
-import React, { useEffect, useState, useCallback, useRef } from "react";
+import React, { useEffect, useState, useCallback } from "react";
 import { Skeleton } from "@/components/ui/skeleton";
 import CopyableLabel from "@/components/copyable-label";
 import { Avatar, AvatarFallback, AvatarImage } from "@radix-ui/react-avatar";
