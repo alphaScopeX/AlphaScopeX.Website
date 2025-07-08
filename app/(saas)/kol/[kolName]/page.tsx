@@ -41,11 +41,7 @@ import IconX from "@/components/icons/x";
 import MiniCandleChart from "@/components/mini-candle-canvas";
 import { CandleData } from "@/types/candle";
 import { TokenKLineResponse } from "@/types/token";
-
-interface KOLStatusContent {
-  i18n: string;
-  content: string;
-}
+import { StatusContent as KOLStatusContent } from "@/types/utils";
 
 /* prettier-ignore */
 type OpinionTData 

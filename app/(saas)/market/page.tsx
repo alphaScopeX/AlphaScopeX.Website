@@ -24,11 +24,7 @@ import { v4 as uuidv4 } from "uuid";
 import { Input } from "@/components/ui/input";
 import { PackageOpen } from "lucide-react";
 import { unit } from "@/lib/utils";
-
-interface MarketStatusContent {
-  i18n: string;
-  content: string;
-}
+import { StatusContent as MarketStatusContent } from "@/types/utils";
 
 export default function TokenMarket() {
   const t = useTranslations("marketPage");
