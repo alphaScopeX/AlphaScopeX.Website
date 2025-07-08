@@ -195,7 +195,7 @@ export default function TokenMarket() {
             onChange={(e) => setSearchTokenName(e.target.value)}
             onKeyDown={(e) => {
               if (e.key === "Enter") {
-                setTokens([]);
+                setTokens(undefined);
                 fetchTokenList();
               }
             }}
