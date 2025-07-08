@@ -7,6 +7,7 @@ import { toast } from "sonner";
 import React, { useEffect, useState, useCallback } from "react";
 import { Skeleton } from "@/components/ui/skeleton";
 import CopyableLabel from "@/components/copyable-label";
+import { Avatar, AvatarFallback, AvatarImage } from "@radix-ui/react-avatar";
 
 export default function TokenDetails() {
   const t = useTranslations("tokenDetailsPage");
@@ -72,11 +73,23 @@ export default function TokenDetails() {
               {tokenStatus === undefined ? (
                 <Skeleton className={`w-full h-full rounded-full`} />
               ) : (
-                <img
-                  src={tokenStatus.image}
-                  alt={`Token ${tokenName}`}
-                  className={`w-full h-full rounded-full object-cover`}
-                />
+                <Avatar
+                  id="token-info-avatar"
+                  className={`w-[120px] h-[120px] max-md:w-[100px] max-md:h-[100px] rounded-full
+                    flex items-center justify-center`}
+                >
+                  <AvatarImage
+                    src={tokenStatus.image}
+                    alt={t("avatarImage.alt", { name: tokenName })}
+                    id="profile-avatar-image"
+                    className={`overflow-hidden justify-center`}
+                  />
+                  <AvatarFallback>
+                    <Skeleton
+                      className={`w-[120px] h-[120px] max-md:w-[80px] max-md:h-[80px]`}
+                    />
+                  </AvatarFallback>
+                </Avatar>
               )}
             </div>
           </div>

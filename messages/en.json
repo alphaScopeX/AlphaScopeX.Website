@@ -133,6 +133,9 @@
         "title": "Network Error",
         "description": "Failed to connect to token details. There may be some network problems"
       }
+    },
+    "avatarImage": {
+      "alt": "Token {name} Avatar Image "
     }
   }
 }
