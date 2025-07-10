@@ -4,16 +4,25 @@ import { useTranslations } from "next-intl";
 import { useParams } from "next/navigation";
 import { TokenData, TokenListResponse } from "@/types/token";
 import { toast } from "sonner";
-import React, { useEffect, useState, useCallback } from "react";
+import React, { useEffect, useState, useCallback, useRef } from "react";
 import { Skeleton } from "@/components/ui/skeleton";
 import CopyableLabel from "@/components/copyable-label";
 import { Avatar, AvatarFallback, AvatarImage } from "@radix-ui/react-avatar";
+
+/* prettier-ignore */
+const wsBackend 
+  = process.env.NEXT_PUBLIC_ALPHA_SCOPE_BACKEND_URL
+    ?.replace("https", "wss")
+    ?.replace("http", "ws");
+
+const KLINE_BAR: `${1 | 3 | 5 | 15 | 30}m` | `${1 | 2 | 4}H` = "1m";
 
 export default function TokenDetails() {
   const t = useTranslations("tokenDetailsPage");
 
   /* prettier-ignore */
   const [tokenDetails, setTokenDetails] = useState<TokenData | undefined>(undefined);
+  const wsRef = useRef<WebSocket | null>(null);
 
   let { tokenName } = useParams<{ tokenName: string }>();
   tokenName = tokenName.replaceAll("-", " ");
@@ -48,8 +57,51 @@ export default function TokenDetails() {
     }
   }, [tokenName, t]);
 
+  const fetchKlineWebSocket = useCallback(async () => {
+    const ws = new WebSocket(
+      `${wsBackend}/api/v1/ws/kline?tokenName=${tokenName}&bar=${KLINE_BAR}`
+    );
+    wsRef.current = ws;
+
+    const handleWsConnect = () => {
+      console.log("[WebSocket]: Connected to token kline WebSocket");
+    };
+
+    const handleWsMessage = (event: MessageEvent) => {
+      try {
+        const data = JSON.parse(event.data);
+        console.log("[WebSocket]: Received data", data);
+      } catch (error) {
+        console.error(
+          "[WebSocket]: Error parsing message",
+          error instanceof Error ? error.message : error
+        );
+      }
+    };
+
+    const handleWsError = (error: Event) => {
+      console.error("[WebSocket]: Error in WebSocket connection", error);
+    };
+
+    const handleWsClose = (event: CloseEvent) => {
+      console.log(
+        `[WebSocket]: Connection closed: ${event.code} - ${event.reason}`
+      );
+      if (event.code !== 1000) {
+        console.log("[WebSocket]: Reconnecting in 3 seconds ...");
+        fetchKlineWebSocket();
+      }
+    };
+
+    ws.addEventListener("open", handleWsConnect);
+    ws.addEventListener("message", handleWsMessage);
+    ws.addEventListener("error", handleWsError);
+    ws.addEventListener("close", handleWsClose);
+  }, [tokenName, t]);
+
   useEffect(() => {
     fetchTokenDetails();
+    fetchKlineWebSocket();
   }, [tokenName, fetchTokenDetails]);
 
   return (
@@ -137,12 +189,12 @@ export default function TokenDetails() {
                     },
                     {
                       i18n: t("status.marketCap"),
-                      content: "$" + tokenDetails.marketCap
+                      content: "$" + tokenDetails.marketCap,
                     },
                     {
                       i18n: t("status.volume24h"),
-                      content: "$" + tokenDetails.totalVolume
-                    }
+                      content: "$" + tokenDetails.totalVolume,
+                    },
                   ].map((status) => (
                     <div
                       id="token-status-item"
