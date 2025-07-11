@@ -52,5 +52,5 @@ export default function DetailsCandleChart({
     };
   }, [data, colorUp, colorDown, borderVisible]);
 
-  return <div ref={chartContainerRef} />;
+  return <div ref={chartContainerRef} className={`h-[200px]`} />;
 }
