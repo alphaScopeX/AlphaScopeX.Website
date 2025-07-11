@@ -8,6 +8,8 @@ import React, { useEffect, useState, useCallback, useRef } from "react";
 import { Skeleton } from "@/components/ui/skeleton";
 import CopyableLabel from "@/components/copyable-label";
 import { Avatar, AvatarFallback, AvatarImage } from "@radix-ui/react-avatar";
+import useWebsocket from "@/hooks/useWebsocket";
+import { Button } from "@/components/ui/button";
 
 /* prettier-ignore */
 const wsBackend 
@@ -15,14 +17,15 @@ const wsBackend
     ?.replace("https", "wss")
     ?.replace("http", "ws");
 
+/* KLINE_BAR only supports 1m 3m 5m 15m 30m 1H 2H 4H */
 const KLINE_BAR: `${1 | 3 | 5 | 15 | 30}m` | `${1 | 2 | 4}H` = "1m";
+/* Set a max retry times */
 
 export default function TokenDetails() {
   const t = useTranslations("tokenDetailsPage");
 
   /* prettier-ignore */
   const [tokenDetails, setTokenDetails] = useState<TokenData | undefined>(undefined);
-  const wsRef = useRef<WebSocket | null>(null);
 
   let { tokenName } = useParams<{ tokenName: string }>();
   tokenName = tokenName.replaceAll("-", " ");
@@ -35,6 +38,12 @@ export default function TokenDetails() {
   //
   // If use `dashTokenName` then the dynamic route will not match and cause
   // `dashTokenName` be `undefined`.
+
+  const { message, send } = useWebsocket<any>(
+    `${wsBackend}/api/v1/ws/kline?tokenName=${encodeURIComponent(
+      tokenName
+    )}&bar=${KLINE_BAR}`
+  );
 
   const fetchTokenDetails = useCallback(async () => {
     try {
@@ -57,49 +66,8 @@ export default function TokenDetails() {
     }
   }, [tokenName, t]);
 
-  const fetchKlineWebSocket = useCallback(() => {
-    const ws = new WebSocket(
-      `${wsBackend}/api/v1/ws/kline?tokenName=BTC&bar=${KLINE_BAR}`
-    );
-    wsRef.current = ws;
-
-    ws.onopen = () => {
-      console.log("[WebSocket]: Connected to token kline WebSocket");
-    };
-
-    ws.onmessage = (event: MessageEvent) => {
-      try {
-        const data = JSON.parse(event.data);
-        console.log("[WebSocket]: Received data", data);
-      } catch (error) {
-        console.error(
-          "[WebSocket]: Error parsing message",
-          error instanceof Error ? error.message : error
-        );
-      }
-    };
-
-    ws.onerror = (error: Event) => {
-      console.error("[WebSocket]: Error in WebSocket connection", error);
-    };
-
-    ws.onclose = (event: CloseEvent) => {
-      console.log(
-        `[WebSocket]: Connection closed: ${event.code} - ${event.reason}`
-      );
-      if (event.code !== 1000) {
-        console.log("[WebSocket]: Reconnecting in 3 seconds ...");
-        fetchKlineWebSocket();
-      }
-    };
-  }, [tokenName, t]);
-
   useEffect(() => {
     fetchTokenDetails();
-    fetchKlineWebSocket();
-
-    return () =>
-      wsRef.current?.close(1000, "User closes the WebSocket connecting.");
   }, [tokenName, fetchTokenDetails]);
 
   return (
@@ -218,6 +186,18 @@ export default function TokenDetails() {
             )}
           </div>
         </section>
+        <Button
+          onClick={() =>
+            send(
+              JSON.stringify({
+                event: "hisKline",
+                data: String(Date.now() - 24 * 60 * 60 * 1000),
+              })
+            )
+          }
+        >
+          {message}
+        </Button>
       </div>
     </main>
   );
