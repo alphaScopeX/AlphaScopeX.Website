@@ -2,12 +2,29 @@
 
 import { useTranslations } from "next-intl";
 import { useParams } from "next/navigation";
-import { TokenData, TokenListResponse } from "@/types/token";
+import {
+  TokenData,
+  TokenKLineWebsocketResponse,
+  TokenListResponse,
+} from "@/types/token";
 import { toast } from "sonner";
 import React, { useEffect, useState, useCallback } from "react";
 import { Skeleton } from "@/components/ui/skeleton";
 import CopyableLabel from "@/components/copyable-label";
 import { Avatar, AvatarFallback, AvatarImage } from "@radix-ui/react-avatar";
+import useWebsocket from "@/hooks/useWebsocket";
+import { TradingViewCandleData } from "@/types/candle";
+import { UTCTimestamp } from "lightweight-charts";
+import DetailsCandleChart from "@/components/details-candle-chart";
+
+/* prettier-ignore */
+const wsBackend 
+  = process.env.NEXT_PUBLIC_ALPHA_SCOPE_BACKEND_URL
+    ?.replace("https", "wss")
+    ?.replace("http", "ws");
+
+/* KLINE_BAR only supports 1m 3m 5m 15m 30m 1H 2H 4H */
+const KLINE_BAR: `${1 | 3 | 5 | 15 | 30}m` | `${1 | 2 | 4}H` = "1m";
 
 export default function TokenDetails() {
   const t = useTranslations("tokenDetailsPage");
@@ -26,6 +43,29 @@ export default function TokenDetails() {
   //
   // If use `dashTokenName` then the dynamic route will not match and cause
   // `dashTokenName` be `undefined`.
+
+  /* There is still some bug: when `tokenName` is not supported by backend, the
+   * websocket cannot establish.
+   */
+  const { message, isConnected, send } =
+    useWebsocket<TokenKLineWebsocketResponse>(
+      `${wsBackend}/api/v1/ws/kline?tokenName=BTC&bar=${KLINE_BAR}`
+    );
+
+  const wsResToTradingView = (
+    wsResponse: TokenKLineWebsocketResponse
+  ): TradingViewCandleData => {
+    return wsResponse.data.map((wsData) => {
+      return {
+        time: parseInt(wsData.timestamp) as UTCTimestamp, // This converts timestamp to UTCTimestamp
+        open: parseFloat(wsData.open),
+        high: parseFloat(wsData.high),
+        low: parseFloat(wsData.low),
+        close: parseFloat(wsData.close),
+      };
+    }).sort((a, b) => a.time - b.time);
+    // The data sent as props into `DetailsCandleData` should be in ascending order.
+  };
 
   const fetchTokenDetails = useCallback(async () => {
     try {
@@ -50,7 +90,16 @@ export default function TokenDetails() {
 
   useEffect(() => {
     fetchTokenDetails();
-  }, [tokenName, fetchTokenDetails]);
+  }, [tokenName]);
+
+  useEffect(() => {
+    send(
+      JSON.stringify({
+        event: "hisKline",
+        data: String(Date.now() - 24 * 60 * 60 * 1000),
+      })
+    );
+  }, [isConnected]);
 
   return (
     <main id="token-details-wrapper" className={`pt-8`}>
@@ -137,12 +186,12 @@ export default function TokenDetails() {
                     },
                     {
                       i18n: t("status.marketCap"),
-                      content: "$" + tokenDetails.marketCap
+                      content: "$" + tokenDetails.marketCap,
                     },
                     {
                       i18n: t("status.volume24h"),
-                      content: "$" + tokenDetails.totalVolume
-                    }
+                      content: "$" + tokenDetails.totalVolume,
+                    },
                   ].map((status) => (
                     <div
                       id="token-status-item"
@@ -167,6 +216,12 @@ export default function TokenDetails() {
               </React.Fragment>
             )}
           </div>
+        </section>
+
+        <section id="token-kline">
+          <DetailsCandleChart
+            data={wsResToTradingView(message ?? { event: "...", data: [] })}
+          />
         </section>
       </div>
     </main>

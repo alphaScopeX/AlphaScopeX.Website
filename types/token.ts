@@ -33,3 +33,18 @@ export type TokenListResponse = BaseResponse<{
   hasNext: boolean;
   hasPrev: boolean;
 }>;
+
+export interface TokenKLineWebsocketResponse {
+  event: string;
+  data: Array<{
+    timestamp: string;
+    open: string;
+    high: string;
+    low: string;
+    close: string;
+    volume: string;
+    volumeCcy: string;
+    volumeQuote: string;
+    confirmStatus: string;
+  }>;
+}
