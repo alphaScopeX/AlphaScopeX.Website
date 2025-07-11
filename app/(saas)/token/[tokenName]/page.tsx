@@ -57,17 +57,17 @@ export default function TokenDetails() {
     }
   }, [tokenName, t]);
 
-  const fetchKlineWebSocket = useCallback(async () => {
+  const fetchKlineWebSocket = useCallback(() => {
     const ws = new WebSocket(
-      `${wsBackend}/api/v1/ws/kline?tokenName=${tokenName}&bar=${KLINE_BAR}`
+      `${wsBackend}/api/v1/ws/kline?tokenName=BTC&bar=${KLINE_BAR}`
     );
     wsRef.current = ws;
 
-    const handleWsConnect = () => {
+    ws.onopen = () => {
       console.log("[WebSocket]: Connected to token kline WebSocket");
     };
 
-    const handleWsMessage = (event: MessageEvent) => {
+    ws.onmessage = (event: MessageEvent) => {
       try {
         const data = JSON.parse(event.data);
         console.log("[WebSocket]: Received data", data);
@@ -79,11 +79,11 @@ export default function TokenDetails() {
       }
     };
 
-    const handleWsError = (error: Event) => {
+    ws.onerror = (error: Event) => {
       console.error("[WebSocket]: Error in WebSocket connection", error);
     };
 
-    const handleWsClose = (event: CloseEvent) => {
+    ws.onclose = (event: CloseEvent) => {
       console.log(
         `[WebSocket]: Connection closed: ${event.code} - ${event.reason}`
       );
@@ -92,16 +92,14 @@ export default function TokenDetails() {
         fetchKlineWebSocket();
       }
     };
-
-    ws.addEventListener("open", handleWsConnect);
-    ws.addEventListener("message", handleWsMessage);
-    ws.addEventListener("error", handleWsError);
-    ws.addEventListener("close", handleWsClose);
   }, [tokenName, t]);
 
   useEffect(() => {
     fetchTokenDetails();
     fetchKlineWebSocket();
+
+    return () =>
+      wsRef.current?.close(1000, "User closes the WebSocket connecting.");
   }, [tokenName, fetchTokenDetails]);
 
   return (
