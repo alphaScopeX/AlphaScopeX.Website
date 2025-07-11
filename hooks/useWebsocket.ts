@@ -30,7 +30,16 @@ export default function useWebsocket<T>(url: string) {
         setError("");
         console.log(`[WebSocket]: Connected to ${url}`);
       };
-      ws.onmessage = (event: MessageEvent<T>) => setMessage(event.data);
+      /* Actually, if you set the type of `event` as `MessageEvent<T>`, it will
+       * not be sent as `T` but still `string`.
+       */
+      ws.onmessage = (event: MessageEvent<string>) => {
+        setMessage(JSON.parse(event.data));
+        console.log("[WebSocket]: Received data");
+
+        // Sometimes the data is very big, so here doesn't need to print the
+        // raw data in the console.
+      };
       ws.onclose = (event: CloseEvent) => {
         setIsConnected(false);
         if (event.code !== 1000) {
@@ -47,10 +56,15 @@ export default function useWebsocket<T>(url: string) {
       };
     } catch (error) {
       setError("[WebSocket]: Initialization error.");
+      console.log(
+        `[WebSocket]: Initialization error: ${
+          error instanceof Error ? error.message : error
+        }`
+      );
     }
   };
 
-  const send = (
+  const send = async (
     data: WebSocket["send"] extends (data: infer T) => void ? T : never
   ) => {
     if (wsRef.current?.readyState === WebSocket.OPEN) {
