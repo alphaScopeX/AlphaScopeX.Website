@@ -18,7 +18,7 @@ export default function CopyableLabel({
   copiedText,
   description,
   ...props
-}: CopyableLabelProps) {
+}: CopyableLabelProps & React.HTMLAttributes<HTMLDivElement>) {
   const handleCopy = async () => {
     await navigator.clipboard.writeText(copiedText);
     toast.success(`${description ?? "It"} has been copied to clipboard.`)
